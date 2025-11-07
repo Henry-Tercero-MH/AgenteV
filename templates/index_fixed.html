@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - Detección de Placas</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .controls { margin-bottom: 12px; }
+        select, button, input { margin-right: 8px; }
+        .badge { display: inline-block; padding: 6px 10px; border-radius: 6px; color: #fff; font-weight: bold; }
+        .badge-idle { background: #888; }
+        .badge-no { background: #666; }
+        .badge-invalid { background: #d9534f; }
+        .badge-valid { background: #5cb85c; }
+        #video { border: 1px solid #ddd; }
+        .status { margin-top: 8px; color: #333; }
+    </style>
+</head>
+<body>
+    <h2>Dashboard - Detección de Placas</h2>
+    <div class="controls">
+        Cámara: <select id="camera_select"></select>
+        <button id="apply_cam">Usar cámara</button>
+    </div>
+    <div class="controls">
+        <strong>Modo:</strong>
+        <label><input type="radio" name="mode" id="mode_manual" value="manual" checked> Manual</label>
+        <label><input type="radio" name="mode" id="mode_auto" value="auto"> Automático</label>
+        <button id="capture_btn" style="background: #5cb85c; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"> Capturar y Analizar</button>
+        <span id="processing_msg" style="margin-left: 10px; color: #ff9800; font-weight: bold; display: none;">Procesando...</span>
+    </div>
+    <div class="controls" id="auto_controls" style="display: none;">
+        Skip frames: <input id="skip_frames" type="number" value="15" min="1" style="width:60px">
+        <button id="apply_skip">Aplicar</button>
+    </div>
+    <div><img id="video" src="/video_feed" width="900" /></div>
+    <div class="status" id="status">Estado: Modo Manual (video sin procesar)</div>
+    <div style="margin-top:8px">
+        Placa actual: <strong id="current_plate">-</strong> | Estado: <span id="current_status" class="badge badge-idle">IDLE</span> &nbsp; Última captura: <span id="last_saved">-</span>
+    </div>
+    <script>
+        let currentMode = 'manual';
+        async function listCams() {
+            const r = await fetch('/list_cameras');
+            const j = await r.json();
+            const sel = document.getElementById('camera_select');
+            sel.innerHTML = '';
+            if (!j.cameras || j.cameras.length === 0) {
+                const opt = document.createElement('option'); opt.value = 0; opt.text = '0 (default)'; sel.appendChild(opt);
+            } else {
+                j.cameras.forEach(i => { const opt = document.createElement('option'); opt.value = i; opt.text = 'Cam ' + i; sel.appendChild(opt); });
+            }
+        }
+        async function setMode(mode) {
+            currentMode = mode;
+            const autoControls = document.getElementById('auto_controls');
+            const captureBtn = document.getElementById('capture_btn');
+            const statusEl = document.getElementById('status');
+            if (mode === 'auto') {
+                autoControls.style.display = 'block';
+                captureBtn.style.display = 'none';
+                statusEl.textContent = 'Estado: Modo Automático (detección continua)';
+                const skip = parseInt(document.getElementById('skip_frames').value) || 15;
+                await fetch('/set_detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ detect: true, skip_frames: skip }) });
+            } else {
+                autoControls.style.display = 'none';
+                captureBtn.style.display = 'inline-block';
+                statusEl.textContent = 'Estado: Modo Manual (video sin procesar)';
+                await fetch('/set_detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ detect: false, skip_frames: 1 }) });
+            }
+        }
+        function setStatusBadge(el, status) {
+            el.className = 'badge badge-idle';
+            if (status === 'VALID') el.className = 'badge badge-valid';
+            if (status === 'INVALID') el.className = 'badge badge-invalid';
+            if (status === 'NO_PLATE') el.className = 'badge badge-no';
+            el.textContent = status || 'IDLE';
+        }
+        document.getElementById('mode_manual').addEventListener('change', () => setMode('manual'));
+        document.getElementById('mode_auto').addEventListener('change', () => setMode('auto'));
+        document.getElementById('capture_btn').addEventListener('click', async () => {
+            const processingMsg = document.getElementById('processing_msg');
+            const statusEl = document.getElementById('status');
+            processingMsg.style.display = 'inline';
+            statusEl.textContent = 'Estado: Capturando y analizando...';
+            try {
+                const r = await fetch('/capture_manual', { method: 'POST' });
+                const j = await r.json();
+                if (j.success) {
+                    statusEl.textContent = 'Estado: ✅ Análisis completado - ' + j.message;
+                    document.getElementById('current_plate').textContent = j.plate || '-';
+                    setStatusBadge(document.getElementById('current_status'), j.status || 'NO_PLATE');
+                    if (j.saved_path) document.getElementById('last_saved').textContent = j.saved_path;
+                } else {
+                    statusEl.textContent = 'Estado: ❌ ' + j.message;
+                }
+            } catch (e) {
+                statusEl.textContent = 'Estado: Error al capturar - ' + e.message;
+            } finally {
+                processingMsg.style.display = 'none';
+            }
+        });
+        document.getElementById('apply_skip').addEventListener('click', async () => {
+            const skip = parseInt(document.getElementById('skip_frames').value) || 15;
+            const r = await fetch('/set_detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ detect: true, skip_frames: skip }) });
+            const j = await r.json();
+            document.getElementById('status').textContent = 'Modo Automático: skip=' + j.skip_frames;
+        });
+        document.getElementById('apply_cam').addEventListener('click', async () => {
+            const sel = document.getElementById('camera_select');
+            const idx = sel.value;
+            const r = await fetch('/set_camera', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ index: idx }) });
+            const j = await r.json();
+            document.getElementById('status').textContent = 'Cámara seteada: ' + j.camera;
+        });
+        document.getElementById('camera_select').addEventListener('change', async () => {
+            const sel = document.getElementById('camera_select');
+            const idx = sel.value;
+            const r = await fetch('/set_camera', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ index: idx }) });
+            const j = await r.json();
+            document.getElementById('status').textContent = 'Cámara cambiada automáticamente a: ' + j.camera;
+            const img = document.getElementById('video');
+            img.src = '/video_feed?_=' + Date.now();
+        });
+        listCams();
+        async function pollStatus() {
+            if (currentMode !== 'auto') return;
+            try {
+                const r = await fetch('/status');
+                const j = await r.json();
+                document.getElementById('current_plate').textContent = j.current_plate || '-';
+                setStatusBadge(document.getElementById('current_status'), j.current_status || 'IDLE');
+                const r2 = await fetch('/last_result');
+                const j2 = await r2.json();
+                if (j2.last_saved) document.getElementById('last_saved').textContent = j2.last_saved;
+            } catch (e) {}
+        }
+        setInterval(pollStatus, 700);
+    </script>
+</body>
+</html>

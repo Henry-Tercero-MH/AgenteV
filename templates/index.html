@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - Detección de Placas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .controls {
+            margin-bottom: 12px;
+        }
+
+        select,
+        button,
+        input {
+            margin-right: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .badge-idle {
+            background: #888;
+        }
+
+        .badge-no {
+            background: #666;
+        }
+
+        .badge-invalid {
+            background: #d9534f;
+        }
+
+        .badge-valid {
+            background: #5cb85c;
+        }
+
+        #video {
+            border: 1px solid #ddd;
+        }
+
+        .status {
+            margin-top: 8px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Dashboard - Detección de Placas</h2>
+
+    <div class="controls">
+        Cámara: <select id="camera_select"></select>
+        <button id="apply_cam">Usar cámara</button>
+        <label><input type="checkbox" id="detect_cb"> Activar detección</label>
+        Skip frames: <input id="skip_frames" type="number" value="3" min="1" style="width:60px">
+        <button id="apply_detect">Aplicar</button>
+    </div>
+
+    <div>
+        <img id="video" src="/video_feed" width="900" />
+    </div>
+
+    <div class="status" id="status">Estado: listo</div>
+
+    <div style="margin-top:8px">
+        Placa actual: <strong id="current_plate">-</strong>
+        &nbsp;|&nbsp;
+        Estado: <span id="current_status" class="badge badge-idle">IDLE</span>
+        &nbsp; &nbsp; Última captura: <span id="last_saved">-</span>
+    </div>
+
+    <script>
+        async function listCams() {
+            const r = await fetch('/list_cameras');
+            const j = await r.json();
+            const sel = document.getElementById('camera_select');
+            sel.innerHTML = '';
+            if (!j.cameras || j.cameras.length === 0) {
+                const opt = document.createElement('option'); opt.value = 0; opt.text = '0 (default)'; sel.appendChild(opt);
+            } else {
+                j.cameras.forEach(i => { const opt = document.createElement('option'); opt.value = i; opt.text = 'Cam ' + i; sel.appendChild(opt); });
+            }
+        }
+
+        document.getElementById('apply_cam').addEventListener('click', async () => {
+            const sel = document.getElementById('camera_select');
+            const idx = sel.value;
+            const r = await fetch('/set_camera', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ index: idx }) });
+            const j = await r.json();
+            document.getElementById('status').textContent = 'Cámara seteada: ' + j.camera;
+        });
+
+        // Auto-reconnect cuando el usuario selecciona otra cámara en el dropdown
+        document.getElementById('camera_select').addEventListener('change', async () => {
+            const sel = document.getElementById('camera_select');
+            const idx = sel.value;
+            const r = await fetch('/set_camera', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ index: idx }) });
+            const j = await r.json();
+            document.getElementById('status').textContent = 'Cámara cambiada automáticamente a: ' + j.camera;
+            // Forzar recarga del stream (el <img> continuará pidiendo /video_feed que abrirá la nueva cámara en el servidor)
+            const img = document.getElementById('video');
+            // reload image by changing src with timestamp to bust cache
+            img.src = '/video_feed?_=' + Date.now();
+        });
+
+        document.getElementById('apply_detect').addEventListener('click', async () => {
+            const detect = document.getElementById('detect_cb').checked;
+            const skip = parseInt(document.getElementById('skip_frames').value) || 3;
+            const r = await fetch('/set_detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ detect: detect, skip_frames: skip }) });
+            const j = await r.json();
+            document.getElementById('status').textContent = 'Detección: ' + j.detect + ' skip=' + j.skip_frames;
+        });
+
+        // capture button removed - scanning is automatic
+
+        // inicializar
+        listCams();
+
+        // Activar detección automática al cargar la página
+        (async function autoEnableDetect() {
+            try {
+                document.getElementById('detect_cb').checked = true;
+                const skip = parseInt(document.getElementById('skip_frames').value) || 3;
+                await fetch('/set_detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ detect: true, skip_frames: skip }) });
+                document.getElementById('status').textContent = 'Detección: true skip=' + skip;
+            } catch (e) {
+                console.warn('No se pudo activar detección automáticamente:', e);
+            }
+        })();
+
+        // Poll /status para mostrar la placa actual y estado
+        function setStatusBadge(el, status) {
+            el.className = 'badge badge-idle';
+            if (status === 'VALID') el.className = 'badge badge-valid';
+            if (status === 'INVALID') el.className = 'badge badge-invalid';
+            if (status === 'NO_PLATE') el.className = 'badge badge-no';
+            el.textContent = status || 'IDLE';
+        }
+
+        async function pollStatus() {
+            try {
+                const r = await fetch('/status');
+                const j = await r.json();
+                document.getElementById('current_plate').textContent = j.current_plate || '-';
+                setStatusBadge(document.getElementById('current_status'), j.current_status || 'IDLE');
+
+                // check last saved
+                const r2 = await fetch('/last_result');
+                const j2 = await r2.json();
+                if (j2.last_saved) document.getElementById('last_saved').textContent = j2.last_saved;
+            } catch (e) {
+                // ignore
+            }
+        }
+        setInterval(pollStatus, 700);
+    </script>
+</body>
+
+</html>
