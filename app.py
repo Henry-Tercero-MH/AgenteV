@@ -15,9 +15,9 @@ import imutils
 import numpy as np
 import sys
 from ultralytics import YOLO
-# PaddleOCR puede fallar si paddlepaddle no está instalado (importa 'paddle').
+# Importar OCR Wrapper que usa PaddleOCR desde Python 3.13
 try:
-    from paddleocr import PaddleOCR
+    from ocr_wrapper import PaddleOCR
     _PADDLE_IMPORT_ERROR = None
 except Exception as e:
     PaddleOCR = None
@@ -347,16 +347,24 @@ def run_on_image(image_path, model_path, output_folder, conf_thresh=0.5, pad=15,
                     # Extraer textos y confidencias del nuevo formato de PaddleOCR 3.x
                     rec_texts = []
                     rec_scores = []
-                    if isinstance(ocr_result, list) and len(ocr_result) > 0 and isinstance(ocr_result[0], dict):
-                        # Formato PaddleOCR 3.x con diccionarios
-                        if 'rec_texts' in ocr_result[0]:
-                            rec_texts = ocr_result[0]['rec_texts']
-                        if 'rec_scores' in ocr_result[0]:
-                            rec_scores = ocr_result[0]['rec_scores']
-                    else:
-                        # Formato antiguo, usar parser
-                        parsed = parse_ocr_result(ocr_result)
-                        rec_texts = [t for _, t in parsed]
+                    if isinstance(ocr_result, list) and len(ocr_result) > 0:
+                        # El wrapper devuelve [[{dict}]], así que accedemos correctamente
+                        if isinstance(ocr_result[0], list) and len(ocr_result[0]) > 0 and isinstance(ocr_result[0][0], dict):
+                            # Formato del wrapper: [[{'rec_texts': [...], 'rec_scores': [...]}]]
+                            if 'rec_texts' in ocr_result[0][0]:
+                                rec_texts = ocr_result[0][0]['rec_texts']
+                            if 'rec_scores' in ocr_result[0][0]:
+                                rec_scores = ocr_result[0][0]['rec_scores']
+                        elif isinstance(ocr_result[0], dict):
+                            # Formato PaddleOCR 3.x directo
+                            if 'rec_texts' in ocr_result[0]:
+                                rec_texts = ocr_result[0]['rec_texts']
+                            if 'rec_scores' in ocr_result[0]:
+                                rec_scores = ocr_result[0]['rec_scores']
+                        else:
+                            # Formato antiguo, usar parser
+                            parsed = parse_ocr_result(ocr_result)
+                            rec_texts = [t for _, t in parsed]
                     
                     # Filtrar palabras de países/regiones comunes
                     country_filters = ['GUATEMALA', 'MEXICO', 'COLOMBIA', 'PERU', 'CHILE', 'ARGENTINA', 
@@ -579,17 +587,28 @@ def run_webcam(model_path, output_folder, cam_index=0, conf_thresh=0.5, pad=15, 
 
                         plate_rgb = cv2.cvtColor(plate, cv2.COLOR_BGR2RGB)
                         try:
-                            ocr_result = ocr.predict(plate_rgb, cls=True)
-                        except Exception:
-                            try:
-                                ocr_result = ocr.predict(plate_rgb)
-                            except Exception:
-                                ocr_result = []
+                            ocr_result = ocr.predict(plate_rgb)
+                        except Exception as e:
+                            print(f"[DEBUG] Error en OCR: {e}")
+                            ocr_result = []
 
-                        parsed = parse_ocr_result(ocr_result)
-                        parsed = sorted(parsed, key=lambda it: min([p[0] for p in it[0]]) if it[0] else 0)
-                        texts = [t for _, t in parsed]
-                        joined = ''.join(texts).upper()
+                        # Extraer textos del resultado (compatible con wrapper)
+                        rec_texts = []
+                        if isinstance(ocr_result, list) and len(ocr_result) > 0:
+                            if isinstance(ocr_result[0], list) and len(ocr_result[0]) > 0 and isinstance(ocr_result[0][0], dict):
+                                # Formato del wrapper
+                                if 'rec_texts' in ocr_result[0][0]:
+                                    rec_texts = ocr_result[0][0]['rec_texts']
+                            elif isinstance(ocr_result[0], dict):
+                                # Formato PaddleOCR directo
+                                if 'rec_texts' in ocr_result[0]:
+                                    rec_texts = ocr_result[0]['rec_texts']
+                            else:
+                                # Formato antiguo
+                                parsed = parse_ocr_result(ocr_result)
+                                rec_texts = [t for _, t in parsed]
+                        
+                        joined = ''.join(rec_texts).upper()
                         output_text = sanitize_text(joined)
 
                         cv2.rectangle(display, (x1, y1), (x2, y2), (0, 255, 0), 2)

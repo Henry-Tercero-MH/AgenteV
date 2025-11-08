@@ -520,24 +520,24 @@ def load_models(model_path, device='cpu', infer_max_dim=640):
         print('Error cargando modelo YOLO:', e)
         STATE['model'] = None
 
-    # Lazy import PaddleOCR to avoid startup issues
+    # Lazy import OCR Wrapper (uses PaddleOCR from Python 3.13)
     global PaddleOCR, _PADDLE_IMPORT_ERROR
     if PaddleOCR is None:
-        print('INFO: Intentando cargar PaddleOCR...')
+        print('INFO: Intentando cargar OCR Wrapper...')
         try:
-            from paddleocr import PaddleOCR as PaddleOCR_class
+            from ocr_wrapper import PaddleOCR as PaddleOCR_class
             PaddleOCR = PaddleOCR_class
-            print('INFO: PaddleOCR cargado exitosamente')
+            print('INFO: OCR Wrapper cargado exitosamente (usando Python 3.13)')
         except Exception as e:
             _PADDLE_IMPORT_ERROR = e
-            print('WARNING: PaddleOCR no está disponible. El OCR no funcionará, pero la detección YOLO sí:', str(e)[:100])
+            print('WARNING: OCR Wrapper no está disponible. El OCR no funcionará, pero la detección YOLO sí:', str(e)[:100])
             STATE['ocr'] = None
             STATE['infer_max_dim'] = int(infer_max_dim) if infer_max_dim else 640
             return
     
     try:
-        print('INFO: Inicializando PaddleOCR...')
-        # Simplified PaddleOCR initialization without deprecated/unsupported parameters
+        print('INFO: Inicializando OCR...')
+        # Simplified OCR initialization
         STATE['ocr'] = PaddleOCR(lang='en')
         print('INFO: PaddleOCR inicializado')
     except Exception as e:
