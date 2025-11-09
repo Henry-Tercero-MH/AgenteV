@@ -18,6 +18,7 @@ Notas:
 import os
 import io
 import sys
+import re
 import time
 import threading
 import argparse
@@ -253,16 +254,52 @@ def annotate_frame(frame):
                             rec_texts = parsed
                         
                         # Filtrar palabras de países/regiones comunes
-                        country_filters = ['GUATEMALA', 'MEXICO', 'COLOMBIA', 'PERU', 'CHILE', 'ARGENTINA', 
-                                          'BRASIL', 'ECUADOR', 'BOLIVIA', 'PARAGUAY', 'URUGUAY', 'VENEZUELA',
-                                          'CENTROAMERICA', 'COSTA RICA', 'PANAMA', 'HONDURAS', 'NICARAGUA',
-                                          'EL SALVADOR']
+                        # Validador inteligente de placas - usar patrones en lugar de lista negra
+                        def is_valid_plate(text):
+                            """Valida si un texto parece ser una placa válida."""
+                            txt = text.strip().upper()
+                            
+                            # Filtrar textos vacíos o muy cortos
+                            if len(txt) < 3:
+                                return False
+                            
+                            # Filtrar años solos (4 dígitos exactos)
+                            if re.match(r'^\d{4}$', txt):
+                                return False
+                            
+                            # Filtrar palabras de país/región comunes
+                            country_keywords = ['GUATEMALA', 'MEXICO', 'CENTRO', 'AMÉRICA', 'AMERICA']
+                            if any(keyword in txt for keyword in country_keywords):
+                                return False
+                            
+                            # Una placa válida típicamente tiene:
+                            # - Solo letras y números (sin espacios ni caracteres especiales inusuales)
+                            # - Longitud entre 4 y 10 caracteres (alphanumeric)
+                            alphanumeric = re.sub(r'[^A-Z0-9]', '', txt)
+                            
+                            if len(alphanumeric) < 4 or len(alphanumeric) > 10:
+                                return False
+                            
+                            # Debe contener al menos 1 letra O al menos 2 dígitos (placas antiguas pueden ser solo números)
+                            # Formato moderno: letras + números (ej: P518FGV, C407BTJ)
+                            # Formato antiguo: solo números con 5+ dígitos (ej: 00188)
+                            has_letter = bool(re.search(r'[A-Z]', alphanumeric))
+                            digit_count = len(re.findall(r'\d', alphanumeric))
+                            
+                            # Válido si: tiene letras Y números, O es solo números con 5+ dígitos
+                            is_modern = has_letter and digit_count >= 1
+                            is_old_numeric = not has_letter and digit_count >= 5
+                            
+                            if not (is_modern or is_old_numeric):
+                                return False
+                            
+                            return True
                         
+                        # Filtrar usando el validador
                         filtered_texts = []
                         filtered_scores = []
                         for idx, txt in enumerate(rec_texts):
-                            txt_upper = txt.upper().strip()
-                            if txt_upper not in country_filters:
+                            if is_valid_plate(txt):
                                 filtered_texts.append(txt)
                                 if idx < len(rec_scores):
                                     filtered_scores.append(rec_scores[idx])
@@ -271,6 +308,25 @@ def annotate_frame(frame):
                         if not filtered_texts:
                             filtered_texts = rec_texts
                             filtered_scores = rec_scores
+                        
+                        # Deduplicar: eliminar textos duplicados y subcadenas
+                        deduplicated_texts = []
+                        for i, txt in enumerate(filtered_texts):
+                            txt_clean = txt.strip()
+                            if not txt_clean:
+                                continue
+                            # Verificar si este texto es subcadena de otro texto más largo
+                            is_substring = False
+                            for j, other_txt in enumerate(filtered_texts):
+                                if i != j and txt_clean in other_txt and len(txt_clean) < len(other_txt):
+                                    is_substring = True
+                                    break
+                            if not is_substring and txt_clean not in deduplicated_texts:
+                                deduplicated_texts.append(txt_clean)
+                        
+                        # Usar textos deduplicados si hay resultados
+                        if deduplicated_texts:
+                            filtered_texts = deduplicated_texts
                         
                         text = ''.join(filtered_texts).upper()
                         
