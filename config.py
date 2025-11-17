@@ -17,12 +17,12 @@ CAMERA_PASSWORD = "Ccamar4."
 # Puerto RTSP (típicamente 554)
 RTSP_PORT = 554
 
-# Canal RTSP (típicamente 101 o 1)
-RTSP_CHANNEL = "101"
+# Canal RTSP (típicamente 101 o 102 para Hikvision)
+RTSP_CHANNEL = "102"
 
 # URLs generadas automáticamente
-RTSP_URL = "Inputs/test9.jpg"  # Usar imagen de prueba
-HTTP_URL = None
+RTSP_URL = f"rtsp://{CAMERA_USER}:{CAMERA_PASSWORD}@{CAMERA_IP}:{RTSP_PORT}/Streaming/Channels/{RTSP_CHANNEL}"
+HTTP_URL = f"http://{CAMERA_USER}:{CAMERA_PASSWORD}@{CAMERA_IP}/video"
 
 # =====================================================
 # CONFIGURACIÓN DE DETECCIÓN YOLO
