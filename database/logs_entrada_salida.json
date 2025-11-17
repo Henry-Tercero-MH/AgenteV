@@ -746,6 +746,114 @@
       "imagen_path": "Outputs/capturas_dashboard/captura_20251116_220809_312547.jpg",
       "confianza": 0.7301232814788818,
       "registrada": false
+    },
+    {
+      "id": 84,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:09:36.220870",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_220849_976398.jpg",
+      "confianza": 0.7352575659751892,
+      "registrada": false
+    },
+    {
+      "id": 85,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:10:15.756583",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_220936_294315.jpg",
+      "confianza": 0.7308608889579773,
+      "registrada": false
+    },
+    {
+      "id": 86,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:10:49.716520",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221015_794300.jpg",
+      "confianza": 0.7087809443473816,
+      "registrada": false
+    },
+    {
+      "id": 87,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:11:29.628486",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221049_740750.jpg",
+      "confianza": 0.7379440069198608,
+      "registrada": false
+    },
+    {
+      "id": 88,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:12:22.094249",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221129_647972.jpg",
+      "confianza": 0.7360753417015076,
+      "registrada": false
+    },
+    {
+      "id": 89,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:13:02.043040",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221222_364344.jpg",
+      "confianza": 0.7407222390174866,
+      "registrada": false
+    },
+    {
+      "id": 90,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:13:37.734314",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221302_082198.jpg",
+      "confianza": 0.7413259744644165,
+      "registrada": false
+    },
+    {
+      "id": 91,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:14:18.582443",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221337_781436.jpg",
+      "confianza": 0.7333617210388184,
+      "registrada": false
+    },
+    {
+      "id": 92,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:15:00.533562",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221418_643425.jpg",
+      "confianza": 0.7471661567687988,
+      "registrada": false
+    },
+    {
+      "id": 93,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:15:41.474398",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221500_577656.jpg",
+      "confianza": 0.7432218790054321,
+      "registrada": false
+    },
+    {
+      "id": 94,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:16:20.135935",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221541_512147.jpg",
+      "confianza": 0.7447883486747742,
+      "registrada": false
+    },
+    {
+      "id": 95,
+      "placa": "P492GZC",
+      "timestamp": "2025-11-16T22:17:04.473618",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251116_221620_228344.jpg",
+      "confianza": 0.7375525832176208,
+      "registrada": false
     }
   ]
 }
