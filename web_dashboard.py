@@ -50,7 +50,7 @@ app = Flask(__name__)
 
 # State shared across requests
 STATE = {
-    'camera_index': 0,
+    'camera_index': 1,
     'cap': None,
     'cap_lock': threading.Lock(),
     'detect': False,
@@ -624,10 +624,10 @@ if __name__ == '__main__':
     parser.add_argument('--truck-model', default=None, help='Ruta al modelo YOLO entrenado para detectar camiones (opcional)')
     # Use localhost by default on Windows to avoid socket permission issues
     parser.add_argument('--host', default='127.0.0.1')
-    parser.add_argument('--port', type=int, default=5000)
+    parser.add_argument('--port', type=int, default=5001)
     parser.add_argument('--device', default='cpu', help='Device to run inference on: cpu or cuda:0 etc. Default: cpu')
-    parser.add_argument('--infer-max-dim', type=int, default=640, help='Maximum image dimension for inference (scales down large frames to this max).')
-    parser.add_argument('--skip-frames', type=int, default=3)
+    parser.add_argument('--infer-max-dim', type=int, default=480, help='Maximum image dimension for inference (scales down large frames to this max).')
+    parser.add_argument('--skip-frames', type=int, default=8)
     parser.add_argument('--hikvision-url', default=None, help='IP or RTSP base for Hikvision camera (e.g. 10.10.7.64 or full rtsp://... )')
     parser.add_argument('--hikvision-user', default=None, help='Hikvision username')
     parser.add_argument('--hikvision-pass', default=None, help='Hikvision password')

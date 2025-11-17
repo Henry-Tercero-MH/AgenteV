@@ -1,0 +1,1572 @@
+{
+  "metadatos": {
+    "fecha_procesamiento": "2025-11-16T18:14:00.398146",
+    "total_imagenes": 40,
+    "tiempo_total": 3571.69,
+    "tiempo_promedio": 89.29,
+    "tiempo_carga_modelos": 1.17,
+    "total_placas_detectadas": 90,
+    "total_placas_con_texto": 74,
+    "tasa_exito_ocr": 82.2,
+    "modelo_placas": "best.pt",
+    "modelo_camiones": "best_truck.pt"
+  },
+  "resultados": [
+    {
+      "id": 1,
+      "nombre_imagen": "camiones.jpg",
+      "ruta_imagen_original": "Inputs/camiones.jpg",
+      "ruta_imagen_anotada": "Outputs/camiones.jpg",
+      "tiempo_procesamiento": 7.99,
+      "cantidad_placas": 0,
+      "placas_con_texto": 0,
+      "detecciones": [],
+      "timestamp": "2025-11-16T17:14:36.440614"
+    },
+    {
+      "id": 2,
+      "nombre_imagen": "car.jpg",
+      "ruta_imagen_original": "Inputs/car.jpg",
+      "ruta_imagen_anotada": "Outputs/car.jpg",
+      "tiempo_procesamiento": 72.254,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            332,
+            695,
+            415,
+            733
+          ],
+          "texto": "PO28GHQ",
+          "confianza_deteccion": 0.6478487253189087,
+          "confianza_ocr": 0.9762460589408875,
+          "imagen_placa": "car_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:15:48.707929"
+    },
+    {
+      "id": 3,
+      "nombre_imagen": "car1.jpg",
+      "ruta_imagen_original": "Inputs/car1.jpg",
+      "ruta_imagen_anotada": "Outputs/car1.jpg",
+      "tiempo_procesamiento": 171.375,
+      "cantidad_placas": 3,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            1089,
+            898,
+            1153,
+            930
+          ],
+          "texto": "GC987D",
+          "confianza_deteccion": 0.6334102749824524,
+          "confianza_ocr": 0.3480727970600128,
+          "imagen_placa": "car1_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            1348,
+            772,
+            1420,
+            827
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.5631981492042542,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "car1_placa_0_1.jpg"
+        },
+        {
+          "caja": [
+            52,
+            945,
+            112,
+            968
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.43872764706611633,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "car1_placa_0_2.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:18:40.122032"
+    },
+    {
+      "id": 4,
+      "nombre_imagen": "placas.jpg",
+      "ruta_imagen_original": "Inputs/placas.jpg",
+      "ruta_imagen_anotada": "Outputs/placas.jpg",
+      "tiempo_procesamiento": 742.584,
+      "cantidad_placas": 18,
+      "placas_con_texto": 18,
+      "detecciones": [
+        {
+          "caja": [
+            1,
+            180,
+            550,
+            544
+          ],
+          "texto": "7J07IN12813ULK6746UVU01ZAVPK8546WCV8960",
+          "confianza_deteccion": 0.7899712324142456,
+          "confianza_ocr": 0.9149443805217743,
+          "imagen_placa": "placas_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            283,
+            414,
+            547,
+            542
+          ],
+          "texto": "NCV896",
+          "confianza_deteccion": 0.6422576904296875,
+          "confianza_ocr": 0.9869141578674316,
+          "imagen_placa": "placas_placa_0_1.jpg"
+        },
+        {
+          "caja": [
+            2,
+            41,
+            555,
+            413
+          ],
+          "texto": "PRA4642PXP3353SLP9307TKY2873ULKA780ULK6746UVU017AQUERTARO22",
+          "confianza_deteccion": 0.5620642900466919,
+          "confianza_ocr": 0.932388074696064,
+          "imagen_placa": "placas_placa_0_2.jpg"
+        },
+        {
+          "caja": [
+            0,
+            4,
+            546,
+            310
+          ],
+          "texto": "PRA4642PXP3353SLP9307TKY2873",
+          "confianza_deteccion": 0.526332676410675,
+          "confianza_ocr": 0.9721753746271133,
+          "imagen_placa": "placas_placa_0_3.jpg"
+        },
+        {
+          "caja": [
+            3,
+            4,
+            276,
+            133
+          ],
+          "texto": "PRA4642",
+          "confianza_deteccion": 0.4967334568500519,
+          "confianza_ocr": 0.9989736080169678,
+          "imagen_placa": "placas_placa_0_4.jpg"
+        },
+        {
+          "caja": [
+            283,
+            4,
+            550,
+            136
+          ],
+          "texto": "PXP3353",
+          "confianza_deteccion": 0.41978704929351807,
+          "confianza_ocr": 0.9638945460319519,
+          "imagen_placa": "placas_placa_0_5.jpg"
+        },
+        {
+          "caja": [
+            0,
+            319,
+            550,
+            547
+          ],
+          "texto": "ULA0746UVU01ZA22MXICOVPK8546WCV8960",
+          "confianza_deteccion": 0.41607022285461426,
+          "confianza_ocr": 0.9240044474601745,
+          "imagen_placa": "placas_placa_0_6.jpg"
+        },
+        {
+          "caja": [
+            0,
+            261,
+            512,
+            499
+          ],
+          "texto": "ULK6746UYU01710N4CV8O",
+          "confianza_deteccion": 0.41109099984169006,
+          "confianza_ocr": 0.7444515898823738,
+          "imagen_placa": "placas_placa_0_7.jpg"
+        },
+        {
+          "caja": [
+            5,
+            277,
+            283,
+            403
+          ],
+          "texto": "LX6746",
+          "confianza_deteccion": 0.37364280223846436,
+          "confianza_ocr": 0.9679707288742065,
+          "imagen_placa": "placas_placa_0_8.jpg"
+        },
+        {
+          "caja": [
+            0,
+            4,
+            532,
+            139
+          ],
+          "texto": "PRA4642PXP33",
+          "confianza_deteccion": 0.3416024446487427,
+          "confianza_ocr": 0.9986923635005951,
+          "imagen_placa": "placas_placa_0_9.jpg"
+        },
+        {
+          "caja": [
+            4,
+            139,
+            280,
+            269
+          ],
+          "texto": "LP9307",
+          "confianza_deteccion": 0.3305058777332306,
+          "confianza_ocr": 0.9981149435043335,
+          "imagen_placa": "placas_placa_0_10.jpg"
+        },
+        {
+          "caja": [
+            9,
+            0,
+            818,
+            547
+          ],
+          "texto": "RFM87A4642PXP3353IAB1P9307TKY2873UAC363LK6746UVU017AUWA773PK8546WCV8960WSE834",
+          "confianza_deteccion": 0.5885778665542603,
+          "confianza_ocr": 0.9474638241987962,
+          "imagen_placa": "placas_placa_1_11.jpg"
+        },
+        {
+          "caja": [
+            10,
+            0,
+            644,
+            320
+          ],
+          "texto": "RA4642PXP335310AB0T0UELP9307TKY2873",
+          "confianza_deteccion": 0.537245512008667,
+          "confianza_ocr": 0.7502080947160721,
+          "imagen_placa": "placas_placa_1_12.jpg"
+        },
+        {
+          "caja": [
+            9,
+            0,
+            616,
+            165
+          ],
+          "texto": "PXP3353A4642",
+          "confianza_deteccion": 0.5222294926643372,
+          "confianza_ocr": 0.9839839339256287,
+          "imagen_placa": "placas_placa_1_13.jpg"
+        },
+        {
+          "caja": [
+            555,
+            406,
+            831,
+            547
+          ],
+          "texto": "WSE8341",
+          "confianza_deteccion": 0.46867313981056213,
+          "confianza_ocr": 0.9934220910072327,
+          "imagen_placa": "placas_placa_1_14.jpg"
+        },
+        {
+          "caja": [
+            9,
+            227,
+            743,
+            519
+          ],
+          "texto": "LK6746UVU017AWSE8PK8546WCV8960",
+          "confianza_deteccion": 0.446420818567276,
+          "confianza_ocr": 0.9927644610404969,
+          "imagen_placa": "placas_placa_1_15.jpg"
+        },
+        {
+          "caja": [
+            9,
+            404,
+            633,
+            545
+          ],
+          "texto": "0968ADMPX8546",
+          "confianza_deteccion": 0.3437442481517792,
+          "confianza_ocr": 0.9019990265369415,
+          "imagen_placa": "placas_placa_1_16.jpg"
+        },
+        {
+          "caja": [
+            9,
+            56,
+            674,
+            289
+          ],
+          "texto": "ZHO6HYLP9307TKY2873",
+          "confianza_deteccion": 0.3328186571598053,
+          "confianza_ocr": 0.9135988156000773,
+          "imagen_placa": "placas_placa_1_17.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:31:02.789881"
+    },
+    {
+      "id": 5,
+      "nombre_imagen": "test.jpg",
+      "ruta_imagen_original": "Inputs/test.jpg",
+      "ruta_imagen_anotada": "Outputs/test.jpg",
+      "tiempo_procesamiento": 60.24,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            1872,
+            1718,
+            2126,
+            1904
+          ],
+          "texto": "ABC123",
+          "confianza_deteccion": 0.37795490026474,
+          "confianza_ocr": 0.9998228549957275,
+          "imagen_placa": "test_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:32:03.033270"
+    },
+    {
+      "id": 6,
+      "nombre_imagen": "test1.jpg",
+      "ruta_imagen_original": "Inputs/test1.jpg",
+      "ruta_imagen_anotada": "Outputs/test1.jpg",
+      "tiempo_procesamiento": 1.865,
+      "cantidad_placas": 0,
+      "placas_con_texto": 0,
+      "detecciones": [],
+      "timestamp": "2025-11-16T17:32:04.898697"
+    },
+    {
+      "id": 7,
+      "nombre_imagen": "test5.jpg",
+      "ruta_imagen_original": "Inputs/test5.jpg",
+      "ruta_imagen_anotada": "Outputs/test5.jpg",
+      "tiempo_procesamiento": 81.662,
+      "cantidad_placas": 2,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            119,
+            159,
+            508,
+            350
+          ],
+          "texto": "PDR6349",
+          "confianza_deteccion": 0.7532365322113037,
+          "confianza_ocr": 0.9347051978111267,
+          "imagen_placa": "test5_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            792,
+            263,
+            875,
+            308
+          ],
+          "texto": "HAM0452",
+          "confianza_deteccion": 0.6972988247871399,
+          "confianza_ocr": 0.9906433820724487,
+          "imagen_placa": "test5_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:33:26.563003"
+    },
+    {
+      "id": 8,
+      "nombre_imagen": "test6.jpg",
+      "ruta_imagen_original": "Inputs/test6.jpg",
+      "ruta_imagen_anotada": "Outputs/test6.jpg",
+      "tiempo_procesamiento": 34.216,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            10,
+            325,
+            748,
+            681
+          ],
+          "texto": "P518FGV",
+          "confianza_deteccion": 0.9259864091873169,
+          "confianza_ocr": 0.9971157312393188,
+          "imagen_placa": "test6_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:34:00.780477"
+    },
+    {
+      "id": 9,
+      "nombre_imagen": "test7.jpg",
+      "ruta_imagen_original": "Inputs/test7.jpg",
+      "ruta_imagen_anotada": "Outputs/test7.jpg",
+      "tiempo_procesamiento": 33.402,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            126,
+            131,
+            231,
+            159
+          ],
+          "texto": "51F82606",
+          "confianza_deteccion": 0.754745602607727,
+          "confianza_ocr": 0.9747905731201172,
+          "imagen_placa": "test7_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:34:34.183216"
+    },
+    {
+      "id": 10,
+      "nombre_imagen": "test8.jpg",
+      "ruta_imagen_original": "Inputs/test8.jpg",
+      "ruta_imagen_anotada": "Outputs/test8.jpg",
+      "tiempo_procesamiento": 41.836,
+      "cantidad_placas": 1,
+      "placas_con_texto": 0,
+      "detecciones": [
+        {
+          "caja": [
+            214,
+            144,
+            273,
+            159
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.7205114364624023,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "test8_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:35:16.020198"
+    },
+    {
+      "id": 11,
+      "nombre_imagen": "test9.jpg",
+      "ruta_imagen_original": "Inputs/test9.jpg",
+      "ruta_imagen_anotada": "Outputs/test9.jpg",
+      "tiempo_procesamiento": 35.609,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            229,
+            131,
+            274,
+            145
+          ],
+          "texto": "C0772319",
+          "confianza_deteccion": 0.6907639503479004,
+          "confianza_ocr": 0.8173105716705322,
+          "imagen_placa": "test9_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:35:51.632382"
+    },
+    {
+      "id": 12,
+      "nombre_imagen": "truck.jpg",
+      "ruta_imagen_original": "Inputs/truck.jpg",
+      "ruta_imagen_anotada": "Outputs/truck.jpg",
+      "tiempo_procesamiento": 89.128,
+      "cantidad_placas": 2,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            595,
+            688,
+            686,
+            735
+          ],
+          "texto": "C941BKZ",
+          "confianza_deteccion": 0.671845018863678,
+          "confianza_ocr": 0.9995976090431213,
+          "imagen_placa": "truck_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            303,
+            520,
+            336,
+            536
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.5503683090209961,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "truck_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:37:20.763391"
+    },
+    {
+      "id": 13,
+      "nombre_imagen": "camiones.jpg",
+      "ruta_imagen_original": "Inputs/camiones.jpg",
+      "ruta_imagen_anotada": "Outputs/camiones.jpg",
+      "tiempo_procesamiento": 6.898,
+      "cantidad_placas": 0,
+      "placas_con_texto": 0,
+      "detecciones": [],
+      "timestamp": "2025-11-16T17:37:27.661500"
+    },
+    {
+      "id": 14,
+      "nombre_imagen": "car.jpg",
+      "ruta_imagen_original": "Inputs/car.jpg",
+      "ruta_imagen_anotada": "Outputs/car.jpg",
+      "tiempo_procesamiento": 48.695,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            332,
+            695,
+            415,
+            733
+          ],
+          "texto": "PO28GHQ",
+          "confianza_deteccion": 0.6478487253189087,
+          "confianza_ocr": 0.9762460589408875,
+          "imagen_placa": "car_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:38:16.360102"
+    },
+    {
+      "id": 15,
+      "nombre_imagen": "car1.jpg",
+      "ruta_imagen_original": "Inputs/car1.jpg",
+      "ruta_imagen_anotada": "Outputs/car1.jpg",
+      "tiempo_procesamiento": 130.605,
+      "cantidad_placas": 3,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            1089,
+            898,
+            1153,
+            930
+          ],
+          "texto": "GC987D",
+          "confianza_deteccion": 0.6334102749824524,
+          "confianza_ocr": 0.3480727970600128,
+          "imagen_placa": "car1_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            1348,
+            772,
+            1420,
+            827
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.5631981492042542,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "car1_placa_0_1.jpg"
+        },
+        {
+          "caja": [
+            52,
+            945,
+            112,
+            968
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.43872764706611633,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "car1_placa_0_2.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:40:26.968690"
+    },
+    {
+      "id": 16,
+      "nombre_imagen": "placas.jpg",
+      "ruta_imagen_original": "Inputs/placas.jpg",
+      "ruta_imagen_anotada": "Outputs/placas.jpg",
+      "tiempo_procesamiento": 919.273,
+      "cantidad_placas": 18,
+      "placas_con_texto": 18,
+      "detecciones": [
+        {
+          "caja": [
+            1,
+            180,
+            550,
+            544
+          ],
+          "texto": "7J07IN12813ULK6746UVU01ZAVPK8546WCV8960",
+          "confianza_deteccion": 0.7899712324142456,
+          "confianza_ocr": 0.9149443805217743,
+          "imagen_placa": "placas_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            283,
+            414,
+            547,
+            542
+          ],
+          "texto": "NCV896",
+          "confianza_deteccion": 0.6422576904296875,
+          "confianza_ocr": 0.9869141578674316,
+          "imagen_placa": "placas_placa_0_1.jpg"
+        },
+        {
+          "caja": [
+            2,
+            41,
+            555,
+            413
+          ],
+          "texto": "PRA4642PXP3353SLP9307TKY2873ULKA780ULK6746UVU017AQUERTARO22",
+          "confianza_deteccion": 0.5620642900466919,
+          "confianza_ocr": 0.932388074696064,
+          "imagen_placa": "placas_placa_0_2.jpg"
+        },
+        {
+          "caja": [
+            0,
+            4,
+            546,
+            310
+          ],
+          "texto": "PRA4642PXP3353SLP9307TKY2873",
+          "confianza_deteccion": 0.526332676410675,
+          "confianza_ocr": 0.9721753746271133,
+          "imagen_placa": "placas_placa_0_3.jpg"
+        },
+        {
+          "caja": [
+            3,
+            4,
+            276,
+            133
+          ],
+          "texto": "PRA4642",
+          "confianza_deteccion": 0.4967334568500519,
+          "confianza_ocr": 0.9989736080169678,
+          "imagen_placa": "placas_placa_0_4.jpg"
+        },
+        {
+          "caja": [
+            283,
+            4,
+            550,
+            136
+          ],
+          "texto": "PXP3353",
+          "confianza_deteccion": 0.41978704929351807,
+          "confianza_ocr": 0.9638945460319519,
+          "imagen_placa": "placas_placa_0_5.jpg"
+        },
+        {
+          "caja": [
+            0,
+            319,
+            550,
+            547
+          ],
+          "texto": "ULA0746UVU01ZA22MXICOVPK8546WCV8960",
+          "confianza_deteccion": 0.41607022285461426,
+          "confianza_ocr": 0.9240044474601745,
+          "imagen_placa": "placas_placa_0_6.jpg"
+        },
+        {
+          "caja": [
+            0,
+            261,
+            512,
+            499
+          ],
+          "texto": "ULK6746UYU01710N4CV8O",
+          "confianza_deteccion": 0.41109099984169006,
+          "confianza_ocr": 0.7444515898823738,
+          "imagen_placa": "placas_placa_0_7.jpg"
+        },
+        {
+          "caja": [
+            5,
+            277,
+            283,
+            403
+          ],
+          "texto": "LX6746",
+          "confianza_deteccion": 0.37364280223846436,
+          "confianza_ocr": 0.9679707288742065,
+          "imagen_placa": "placas_placa_0_8.jpg"
+        },
+        {
+          "caja": [
+            0,
+            4,
+            532,
+            139
+          ],
+          "texto": "PRA4642PXP33",
+          "confianza_deteccion": 0.3416024446487427,
+          "confianza_ocr": 0.9986923635005951,
+          "imagen_placa": "placas_placa_0_9.jpg"
+        },
+        {
+          "caja": [
+            4,
+            139,
+            280,
+            269
+          ],
+          "texto": "LP9307",
+          "confianza_deteccion": 0.3305058777332306,
+          "confianza_ocr": 0.9981149435043335,
+          "imagen_placa": "placas_placa_0_10.jpg"
+        },
+        {
+          "caja": [
+            9,
+            0,
+            818,
+            547
+          ],
+          "texto": "RFM87A4642PXP3353IAB1P9307TKY2873UAC363LK6746UVU017AUWA773PK8546WCV8960WSE834",
+          "confianza_deteccion": 0.5885778665542603,
+          "confianza_ocr": 0.9474638241987962,
+          "imagen_placa": "placas_placa_1_11.jpg"
+        },
+        {
+          "caja": [
+            10,
+            0,
+            644,
+            320
+          ],
+          "texto": "RA4642PXP335310AB0T0UELP9307TKY2873",
+          "confianza_deteccion": 0.537245512008667,
+          "confianza_ocr": 0.7502080947160721,
+          "imagen_placa": "placas_placa_1_12.jpg"
+        },
+        {
+          "caja": [
+            9,
+            0,
+            616,
+            165
+          ],
+          "texto": "PXP3353A4642",
+          "confianza_deteccion": 0.5222294926643372,
+          "confianza_ocr": 0.9839839339256287,
+          "imagen_placa": "placas_placa_1_13.jpg"
+        },
+        {
+          "caja": [
+            555,
+            406,
+            831,
+            547
+          ],
+          "texto": "WSE8341",
+          "confianza_deteccion": 0.46867313981056213,
+          "confianza_ocr": 0.9934220910072327,
+          "imagen_placa": "placas_placa_1_14.jpg"
+        },
+        {
+          "caja": [
+            9,
+            227,
+            743,
+            519
+          ],
+          "texto": "LK6746UVU017AWSE8PK8546WCV8960",
+          "confianza_deteccion": 0.446420818567276,
+          "confianza_ocr": 0.9927644610404969,
+          "imagen_placa": "placas_placa_1_15.jpg"
+        },
+        {
+          "caja": [
+            9,
+            404,
+            633,
+            545
+          ],
+          "texto": "0968ADMPX8546",
+          "confianza_deteccion": 0.3437442481517792,
+          "confianza_ocr": 0.9019990265369415,
+          "imagen_placa": "placas_placa_1_16.jpg"
+        },
+        {
+          "caja": [
+            9,
+            56,
+            674,
+            289
+          ],
+          "texto": "ZHO6HYLP9307TKY2873",
+          "confianza_deteccion": 0.3328186571598053,
+          "confianza_ocr": 0.9135988156000773,
+          "imagen_placa": "placas_placa_1_17.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:55:46.276423"
+    },
+    {
+      "id": 17,
+      "nombre_imagen": "test.jpg",
+      "ruta_imagen_original": "Inputs/test.jpg",
+      "ruta_imagen_anotada": "Outputs/test.jpg",
+      "tiempo_procesamiento": 33.8,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            1872,
+            1718,
+            2126,
+            1904
+          ],
+          "texto": "ABC123",
+          "confianza_deteccion": 0.37795490026474,
+          "confianza_ocr": 0.9998228549957275,
+          "imagen_placa": "test_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:56:20.079573"
+    },
+    {
+      "id": 18,
+      "nombre_imagen": "test1.jpg",
+      "ruta_imagen_original": "Inputs/test1.jpg",
+      "ruta_imagen_anotada": "Outputs/test1.jpg",
+      "tiempo_procesamiento": 0.971,
+      "cantidad_placas": 0,
+      "placas_con_texto": 0,
+      "detecciones": [],
+      "timestamp": "2025-11-16T17:56:21.050656"
+    },
+    {
+      "id": 19,
+      "nombre_imagen": "test5.jpg",
+      "ruta_imagen_original": "Inputs/test5.jpg",
+      "ruta_imagen_anotada": "Outputs/test5.jpg",
+      "tiempo_procesamiento": 61.696,
+      "cantidad_placas": 2,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            119,
+            159,
+            508,
+            350
+          ],
+          "texto": "PDR6349",
+          "confianza_deteccion": 0.7532365322113037,
+          "confianza_ocr": 0.9347051978111267,
+          "imagen_placa": "test5_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            792,
+            263,
+            875,
+            308
+          ],
+          "texto": "HAM0452",
+          "confianza_deteccion": 0.6972988247871399,
+          "confianza_ocr": 0.9906433820724487,
+          "imagen_placa": "test5_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:57:22.749285"
+    },
+    {
+      "id": 20,
+      "nombre_imagen": "test6.jpg",
+      "ruta_imagen_original": "Inputs/test6.jpg",
+      "ruta_imagen_anotada": "Outputs/test6.jpg",
+      "tiempo_procesamiento": 33.703,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            10,
+            325,
+            748,
+            681
+          ],
+          "texto": "P518FGV",
+          "confianza_deteccion": 0.9259864091873169,
+          "confianza_ocr": 0.9971157312393188,
+          "imagen_placa": "test6_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:57:56.454183"
+    },
+    {
+      "id": 21,
+      "nombre_imagen": "test7.jpg",
+      "ruta_imagen_original": "Inputs/test7.jpg",
+      "ruta_imagen_anotada": "Outputs/test7.jpg",
+      "tiempo_procesamiento": 24.826,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            126,
+            131,
+            231,
+            159
+          ],
+          "texto": "51F82606",
+          "confianza_deteccion": 0.754745602607727,
+          "confianza_ocr": 0.9747905731201172,
+          "imagen_placa": "test7_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:58:21.281207"
+    },
+    {
+      "id": 22,
+      "nombre_imagen": "test8.jpg",
+      "ruta_imagen_original": "Inputs/test8.jpg",
+      "ruta_imagen_anotada": "Outputs/test8.jpg",
+      "tiempo_procesamiento": 24.556,
+      "cantidad_placas": 1,
+      "placas_con_texto": 0,
+      "detecciones": [
+        {
+          "caja": [
+            214,
+            144,
+            273,
+            159
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.7205114364624023,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "test8_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:58:45.838360"
+    },
+    {
+      "id": 23,
+      "nombre_imagen": "test9.jpg",
+      "ruta_imagen_original": "Inputs/test9.jpg",
+      "ruta_imagen_anotada": "Outputs/test9.jpg",
+      "tiempo_procesamiento": 28.136,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            229,
+            131,
+            274,
+            145
+          ],
+          "texto": "C0772319",
+          "confianza_deteccion": 0.6907639503479004,
+          "confianza_ocr": 0.8173105716705322,
+          "imagen_placa": "test9_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T17:59:13.976045"
+    },
+    {
+      "id": 24,
+      "nombre_imagen": "truck.jpg",
+      "ruta_imagen_original": "Inputs/truck.jpg",
+      "ruta_imagen_anotada": "Outputs/truck.jpg",
+      "tiempo_procesamiento": 64.383,
+      "cantidad_placas": 2,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            595,
+            688,
+            686,
+            735
+          ],
+          "texto": "C941BKZ",
+          "confianza_deteccion": 0.671845018863678,
+          "confianza_ocr": 0.9995976090431213,
+          "imagen_placa": "truck_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            303,
+            520,
+            336,
+            536
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.5503683090209961,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "truck_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:00:18.360814"
+    },
+    {
+      "id": 25,
+      "nombre_imagen": "test2.jpeg",
+      "ruta_imagen_original": "Inputs/test2.jpeg",
+      "ruta_imagen_anotada": "Outputs/test2.jpeg",
+      "tiempo_procesamiento": 59.19,
+      "cantidad_placas": 2,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            392,
+            53,
+            882,
+            350
+          ],
+          "texto": "C407BTJ",
+          "confianza_deteccion": 0.6443498730659485,
+          "confianza_ocr": 0.9952078461647034,
+          "imagen_placa": "test2_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            282,
+            53,
+            871,
+            504
+          ],
+          "texto": "C407BTJ",
+          "confianza_deteccion": 0.33019205927848816,
+          "confianza_ocr": 0.951122373342514,
+          "imagen_placa": "test2_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:01:17.573352"
+    },
+    {
+      "id": 26,
+      "nombre_imagen": "truck2.jpeg",
+      "ruta_imagen_original": "Inputs/truck2.jpeg",
+      "ruta_imagen_anotada": "Outputs/truck2.jpeg",
+      "tiempo_procesamiento": 28.836,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            107,
+            79,
+            174,
+            115
+          ],
+          "texto": "127RFS",
+          "confianza_deteccion": 0.768915593624115,
+          "confianza_ocr": 0.9664057493209839,
+          "imagen_placa": "truck2_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:01:46.412806"
+    },
+    {
+      "id": 27,
+      "nombre_imagen": "test2.jpeg",
+      "ruta_imagen_original": "Inputs/test2.jpeg",
+      "ruta_imagen_anotada": "Outputs/test2.jpeg",
+      "tiempo_procesamiento": 71.188,
+      "cantidad_placas": 2,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            392,
+            53,
+            882,
+            350
+          ],
+          "texto": "C407BTJ",
+          "confianza_deteccion": 0.6443498730659485,
+          "confianza_ocr": 0.9952078461647034,
+          "imagen_placa": "test2_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            282,
+            53,
+            871,
+            504
+          ],
+          "texto": "C407BTJ",
+          "confianza_deteccion": 0.33019205927848816,
+          "confianza_ocr": 0.951122373342514,
+          "imagen_placa": "test2_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:02:57.602918"
+    },
+    {
+      "id": 28,
+      "nombre_imagen": "truck2.jpeg",
+      "ruta_imagen_original": "Inputs/truck2.jpeg",
+      "ruta_imagen_anotada": "Outputs/truck2.jpeg",
+      "tiempo_procesamiento": 34.006,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            107,
+            79,
+            174,
+            115
+          ],
+          "texto": "127RFS",
+          "confianza_deteccion": 0.768915593624115,
+          "confianza_ocr": 0.9664057493209839,
+          "imagen_placa": "truck2_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:03:31.610258"
+    },
+    {
+      "id": 29,
+      "nombre_imagen": "image.png",
+      "ruta_imagen_original": "Inputs/image.png",
+      "ruta_imagen_anotada": "Outputs/image.png",
+      "tiempo_procesamiento": 90.223,
+      "cantidad_placas": 3,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            167,
+            331,
+            214,
+            356
+          ],
+          "texto": "C343BNG",
+          "confianza_deteccion": 0.7318995594978333,
+          "confianza_ocr": 0.9736242294311523,
+          "imagen_placa": "image_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            167,
+            331,
+            214,
+            356
+          ],
+          "texto": "C343BNG",
+          "confianza_deteccion": 0.7067254185676575,
+          "confianza_ocr": 0.9736242294311523,
+          "imagen_placa": "image_placa_1_1.jpg"
+        },
+        {
+          "caja": [
+            502,
+            273,
+            525,
+            287
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.40474647283554077,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "image_placa_1_2.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:05:01.837704"
+    },
+    {
+      "id": 30,
+      "nombre_imagen": "test3.png",
+      "ruta_imagen_original": "Inputs/test3.png",
+      "ruta_imagen_anotada": "Outputs/test3.png",
+      "tiempo_procesamiento": 30.131,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            4,
+            14,
+            460,
+            238
+          ],
+          "texto": "P123SA1",
+          "confianza_deteccion": 0.8476793766021729,
+          "confianza_ocr": 0.9494833946228027,
+          "imagen_placa": "test3_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:05:31.969817"
+    },
+    {
+      "id": 31,
+      "nombre_imagen": "truck2.png",
+      "ruta_imagen_original": "Inputs/truck2.png",
+      "ruta_imagen_anotada": "Outputs/truck2.png",
+      "tiempo_procesamiento": 30.339,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            0,
+            2,
+            300,
+            152
+          ],
+          "texto": "P123AB",
+          "confianza_deteccion": 0.8603121638298035,
+          "confianza_ocr": 0.9998751282691956,
+          "imagen_placa": "truck2_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:06:02.309794"
+    },
+    {
+      "id": 32,
+      "nombre_imagen": "truck3.png",
+      "ruta_imagen_original": "Inputs/truck3.png",
+      "ruta_imagen_anotada": "Outputs/truck3.png",
+      "tiempo_procesamiento": 27.983,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            335,
+            200,
+            410,
+            234
+          ],
+          "texto": "C941BKZ",
+          "confianza_deteccion": 0.6957086324691772,
+          "confianza_ocr": 0.9992637634277344,
+          "imagen_placa": "truck3_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:06:30.295776"
+    },
+    {
+      "id": 33,
+      "nombre_imagen": "image.png",
+      "ruta_imagen_original": "Inputs/image.png",
+      "ruta_imagen_anotada": "Outputs/image.png",
+      "tiempo_procesamiento": 85.084,
+      "cantidad_placas": 3,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            167,
+            331,
+            214,
+            356
+          ],
+          "texto": "C343BNG",
+          "confianza_deteccion": 0.7318995594978333,
+          "confianza_ocr": 0.9736242294311523,
+          "imagen_placa": "image_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            167,
+            331,
+            214,
+            356
+          ],
+          "texto": "C343BNG",
+          "confianza_deteccion": 0.7067254185676575,
+          "confianza_ocr": 0.9736242294311523,
+          "imagen_placa": "image_placa_1_1.jpg"
+        },
+        {
+          "caja": [
+            502,
+            273,
+            525,
+            287
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.40474647283554077,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "image_placa_1_2.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:07:55.381557"
+    },
+    {
+      "id": 34,
+      "nombre_imagen": "test3.png",
+      "ruta_imagen_original": "Inputs/test3.png",
+      "ruta_imagen_anotada": "Outputs/test3.png",
+      "tiempo_procesamiento": 27.218,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            4,
+            14,
+            460,
+            238
+          ],
+          "texto": "P123SA1",
+          "confianza_deteccion": 0.8476793766021729,
+          "confianza_ocr": 0.9494833946228027,
+          "imagen_placa": "test3_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:08:22.600162"
+    },
+    {
+      "id": 35,
+      "nombre_imagen": "truck2.png",
+      "ruta_imagen_original": "Inputs/truck2.png",
+      "ruta_imagen_anotada": "Outputs/truck2.png",
+      "tiempo_procesamiento": 28.081,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            0,
+            2,
+            300,
+            152
+          ],
+          "texto": "P123AB",
+          "confianza_deteccion": 0.8603121638298035,
+          "confianza_ocr": 0.9998751282691956,
+          "imagen_placa": "truck2_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:08:50.682250"
+    },
+    {
+      "id": 36,
+      "nombre_imagen": "truck3.png",
+      "ruta_imagen_original": "Inputs/truck3.png",
+      "ruta_imagen_anotada": "Outputs/truck3.png",
+      "tiempo_procesamiento": 26.236,
+      "cantidad_placas": 1,
+      "placas_con_texto": 1,
+      "detecciones": [
+        {
+          "caja": [
+            335,
+            200,
+            410,
+            234
+          ],
+          "texto": "C941BKZ",
+          "confianza_deteccion": 0.6957086324691772,
+          "confianza_ocr": 0.9992637634277344,
+          "imagen_placa": "truck3_placa_0_0.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:09:16.919327"
+    },
+    {
+      "id": 37,
+      "nombre_imagen": "test4.webp",
+      "ruta_imagen_original": "Inputs/test4.webp",
+      "ruta_imagen_anotada": "Outputs/test4.webp",
+      "tiempo_procesamiento": 58.514,
+      "cantidad_placas": 2,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            24,
+            8,
+            555,
+            293
+          ],
+          "texto": "0018B",
+          "confianza_deteccion": 0.8855330944061279,
+          "confianza_ocr": 0.7789871096611023,
+          "imagen_placa": "test4_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            103,
+            313,
+            490,
+            480
+          ],
+          "texto": "001BB8",
+          "confianza_deteccion": 0.8800899386405945,
+          "confianza_ocr": 0.7642301917076111,
+          "imagen_placa": "test4_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:10:15.435141"
+    },
+    {
+      "id": 38,
+      "nombre_imagen": "trailer.webp",
+      "ruta_imagen_original": "Inputs/trailer.webp",
+      "ruta_imagen_anotada": "Outputs/trailer.webp",
+      "tiempo_procesamiento": 82.616,
+      "cantidad_placas": 3,
+      "placas_con_texto": 0,
+      "detecciones": [
+        {
+          "caja": [
+            0,
+            26,
+            97,
+            109
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.34665897488594055,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "trailer_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            0,
+            9,
+            89,
+            126
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.3260596692562103,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "trailer_placa_0_1.jpg"
+        },
+        {
+          "caja": [
+            0,
+            18,
+            131,
+            120
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.3233780264854431,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "trailer_placa_0_2.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:11:38.054510"
+    },
+    {
+      "id": 39,
+      "nombre_imagen": "test4.webp",
+      "ruta_imagen_original": "Inputs/test4.webp",
+      "ruta_imagen_anotada": "Outputs/test4.webp",
+      "tiempo_procesamiento": 61.939,
+      "cantidad_placas": 2,
+      "placas_con_texto": 2,
+      "detecciones": [
+        {
+          "caja": [
+            24,
+            8,
+            555,
+            293
+          ],
+          "texto": "0018B",
+          "confianza_deteccion": 0.8855330944061279,
+          "confianza_ocr": 0.7789871096611023,
+          "imagen_placa": "test4_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            103,
+            313,
+            490,
+            480
+          ],
+          "texto": "001BB8",
+          "confianza_deteccion": 0.8800899386405945,
+          "confianza_ocr": 0.7642301917076111,
+          "imagen_placa": "test4_placa_0_1.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:12:39.995315"
+    },
+    {
+      "id": 40,
+      "nombre_imagen": "trailer.webp",
+      "ruta_imagen_original": "Inputs/trailer.webp",
+      "ruta_imagen_anotada": "Outputs/trailer.webp",
+      "tiempo_procesamiento": 80.4,
+      "cantidad_placas": 3,
+      "placas_con_texto": 0,
+      "detecciones": [
+        {
+          "caja": [
+            0,
+            26,
+            97,
+            109
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.34665897488594055,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "trailer_placa_0_0.jpg"
+        },
+        {
+          "caja": [
+            0,
+            9,
+            89,
+            126
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.3260596692562103,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "trailer_placa_0_1.jpg"
+        },
+        {
+          "caja": [
+            0,
+            18,
+            131,
+            120
+          ],
+          "texto": "",
+          "confianza_deteccion": 0.3233780264854431,
+          "confianza_ocr": 0.0,
+          "imagen_placa": "trailer_placa_0_2.jpg"
+        }
+      ],
+      "timestamp": "2025-11-16T18:14:00.396897"
+    }
+  ]
+}
