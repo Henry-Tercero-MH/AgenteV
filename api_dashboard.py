@@ -6,12 +6,13 @@ Control de Garita con WebSocket en tiempo real
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 import json
 import os
+import subprocess
 from pathlib import Path
 import asyncio
 import shutil
@@ -74,9 +75,53 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Montar carpetas estáticas para servir imágenes
 app.mount("/outputs", StaticFiles(directory="Outputs"), name="outputs")
 app.mount("/inputs", StaticFiles(directory="Inputs"), name="inputs")
+# Montar carpeta HLS para servir el stream
+if not os.path.exists("hls"):
+    os.makedirs("hls")
+app.mount("/hls", StaticFiles(directory="hls"), name="hls")
+
+# Configuración de la cámara Hikvision y HLS
+try:
+    from config import RTSP_URL
+except ImportError:
+    # Fallback a configuración por defecto
+    RTSP_URL = 'rtsp://admin:Ccamar4.@10.10.7.224:554/Streaming/Channels/2'
+HLS_DIR = os.path.join(os.getcwd(), 'hls')
+HLS_PLAYLIST = 'stream.m3u8'
+HLS_PATH = os.path.join(HLS_DIR, HLS_PLAYLIST)
+
+# Comando ffmpeg para convertir RTSP a HLS
+FFMPEG_CMD = [
+    'ffmpeg',
+    '-i', RTSP_URL,
+    '-c:v', 'copy',
+    '-c:a', 'aac',
+    '-f', 'hls',
+    '-hls_time', '2',
+    '-hls_list_size', '3',
+    '-hls_flags', 'delete_segments',
+    HLS_PATH
+]
+
+def start_ffmpeg():
+    os.makedirs(HLS_DIR, exist_ok=True)
+    # Si ya hay un proceso ffmpeg corriendo, no lanzar otro
+    # Solo en Windows: buscar ffmpeg en procesos
+    try:
+        import psutil
+        for proc in psutil.process_iter(['name']):
+            if proc.info['name'] and 'ffmpeg' in proc.info['name']:
+                return
+    except ImportError:
+        pass
+    subprocess.Popen(FFMPEG_CMD)
+
+# Endpoint para obtener la URL HLS
+@app.get("/api/hls-url")
+def get_hls_url():
+    return {"hls_url": f"/hls/{HLS_PLAYLIST}"}
 
 # Rutas del API
 @app.get("/")
@@ -582,9 +627,10 @@ def health_check():
 
 
 if __name__ == "__main__":
-    import uvicorn
     print(">> Iniciando API Dashboard...")
     print(">> Servidor: http://localhost:8001")
     print(">> Documentacion: http://localhost:8001/docs")
     print(">> Redoc: http://localhost:8001/redoc")
+    start_ffmpeg()
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")

@@ -9,6 +9,7 @@ import PlateDisplay from './components/PlateDisplay';
 import PlateDetectionCard from './components/PlateDetectionCard';
 import VehicleInfoCard from './components/VehicleInfoCard';
 import CameraCapture from './components/CameraCapture';
+import HlsStream from './components/HlsStream';
 
 const API_URL = 'http://localhost:8001';
 const WS_URL = 'ws://localhost:8001/ws';
@@ -23,7 +24,10 @@ function App() {
   const [currentDetection, setCurrentDetection] = useState(null);
   const [historial, setHistorial] = useState([]);
   const [wsConnected, setWsConnected] = useState(false);
+  const [backendConnected, setBackendConnected] = useState(false);
   const wsRef = useRef(null);
+
+  // URL del stream HLS (canal 102)
 
   // Conectar WebSocket
   useEffect(() => {
@@ -41,6 +45,13 @@ function App() {
     fetchData();
   }, []);
 
+  // Verificar conexión del backend cada 30 segundos
+  useEffect(() => {
+    checkBackendConnection();
+    const interval = setInterval(checkBackendConnection, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const connectWebSocket = () => {
     try {
       // Evitar múltiples intentos simultáneos
@@ -50,6 +61,7 @@ function App() {
         return;
       }
 
+      console.log('🔌 Intentando conectar WebSocket...');
       const ws = new WebSocket(WS_URL);
 
       ws.onopen = () => {
@@ -70,7 +82,6 @@ function App() {
           if (event.data === 'pong') {
             return;
           }
-
           const message = JSON.parse(event.data);
           if (message.tipo === 'nueva_deteccion') {
             console.log('🚗 Nueva detección recibida:', message.data);
@@ -91,8 +102,7 @@ function App() {
       };
 
       ws.onerror = (error) => {
-        // En desarrollo, React StrictMode causa errores esperados
-        console.warn('⚠️ WebSocket error (normal en desarrollo)');
+        console.warn('⚠️ Error de WebSocket (posiblemente backend no está corriendo):', error);
         setWsConnected(false);
       };
 
@@ -108,63 +118,14 @@ function App() {
           setTimeout(() => {
             console.log('🔄 Intentando reconectar WebSocket...');
             connectWebSocket();
-          }, 5000);
+          }, 3000);
         }
       };
 
       wsRef.current = ws;
     } catch (error) {
-      console.error('❌ Error al conectar WebSocket:', error);
-      // Reintentar después de 5 segundos
-      setTimeout(() => {
-        connectWebSocket();
-      }, 5000);
-    }
-  };
-
-  const fetchHistorial = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/registros/historial?limit=50`);
-      setHistorial(response.data.registros || []);
-    } catch (error) {
-      console.error('Error al cargar historial:', error);
-    }
-  };
-
-  const fetchHistorialPlaca = async (placa) => {
-    try {
-      const response = await axios.get(`${API_URL}/api/registros/placa/${placa}`);
-      setHistorial(response.data.registros || []);
-    } catch (error) {
-      console.error('Error al cargar historial de placa:', error);
-    }
-  };
-
-  const handleCameraDetection = (detectionData) => {
-    console.log('🎥 Detección desde cámara:', detectionData);
-
-    // Si hay detecciones exitosas, el WebSocket ya actualizará el dashboard
-    // Opcionalmente podemos actualizar el historial manualmente
-    if (detectionData.success && detectionData.detecciones?.length > 0) {
-      fetchHistorial();
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/api/resultados`);
-      setData(response.data);
-      setError(null);
-    } catch (err) {
-      console.error('Error al cargar datos:', err);
-      setError(
-        err.response?.status === 404
-          ? 'No se encontraron resultados. Ejecuta primero: python process_batch.py'
-          : 'Error al conectar con el servidor. Asegúrate de que la API esté corriendo en el puerto 8001.'
-      );
-    } finally {
-      setLoading(false);
+      console.error('Error al crear conexión WebSocket:', error);
+      setWsConnected(false);
     }
   };
 
@@ -184,6 +145,64 @@ function App() {
       console.error('Error al iniciar procesamiento:', err);
       alert('Error al iniciar el procesamiento batch');
       setLoading(false);
+    }
+  };
+
+  const fetchHistorial = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/registros/historial`);
+      setHistorial(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error('Error al cargar historial:', error);
+      setHistorial([]);
+    }
+  };
+
+  const fetchHistorialPlaca = async (placa) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/registros/placa/${placa}`);
+      console.log('Historial de placa:', response.data);
+    } catch (error) {
+      console.error('Error al cargar historial de placa:', error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/api/resultados`);
+      setData(response.data);
+      setError(null);
+      setBackendConnected(true);
+    } catch (err) {
+      console.error('Error al cargar datos:', err);
+      setError(
+        err.response?.status === 404
+          ? 'No se encontraron resultados. Ejecuta primero: python process_batch.py'
+          : 'Error al conectar con el servidor. Asegúrate de que la API esté corriendo en el puerto 8001.'
+      );
+      setBackendConnected(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkBackendConnection = async () => {
+    try {
+      await axios.get(`${API_URL}/health`, { timeout: 5000 });
+      setBackendConnected(true);
+    } catch (error) {
+      setBackendConnected(false);
+    }
+  };
+
+  const handleCameraDetection = (detectionData) => {
+    console.log('🎥 Detección desde cámara:', detectionData);
+
+    // Si hay detecciones exitosas, el WebSocket ya actualizará el dashboard
+    // Opcionalmente podemos actualizar el historial manualmente
+    if (detectionData.success && detectionData.detecciones?.length > 0) {
+      fetchHistorial();
     }
   };
 
@@ -223,16 +242,32 @@ function App() {
               <h1 className="text-3xl font-bold text-gray-900">
                 🦅 Falcon EPSA - Control de Garita
               </h1>
-              {/* Indicador WebSocket */}
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    wsConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
-                  }`}
-                />
-                <span className="text-sm text-gray-600">
-                  {wsConnected ? 'Conectado' : 'Desconectado'}
-                </span>
+              {/* Indicadores de conexión */}
+              <div className="flex items-center gap-4">
+                {/* WebSocket */}
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      wsConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                    }`}
+                    title={wsConnected ? 'WebSocket conectado' : 'WebSocket desconectado'}
+                  />
+                  <span className={`text-sm font-bold ${wsConnected ? 'text-green-700' : 'text-red-700'}`}>
+                    WS: {wsConnected ? 'Conectado' : 'Desconectado'}
+                  </span>
+                </div>
+                {/* Backend API */}
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      backendConnected ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'
+                    }`}
+                    title={backendConnected ? 'Backend conectado' : 'Backend desconectado'}
+                  />
+                  <span className={`text-sm font-bold ${backendConnected ? 'text-green-700' : 'text-yellow-700'}`}>
+                    API: {backendConnected ? 'OK' : 'Verificando...'}
+                  </span>
+                </div>
               </div>
             </div>
             <button
@@ -314,7 +349,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {historial.length === 0 ? (
+                  {!Array.isArray(historial) || historial.length === 0 ? (
                     <tr>
                       <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
                         No hay registros todavía
@@ -322,20 +357,20 @@ function App() {
                     </tr>
                   ) : (
                     historial.map((reg, idx) => (
-                      <tr key={reg.id} className="hover:bg-gray-50">
+                      <tr key={reg.id || idx} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {reg.id}
+                          {reg.id || idx + 1}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-gray-900">
-                          {reg.placa}
+                          {reg.placa || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            {reg.tipo_evento}
+                            {reg.tipo_evento || 'ENTRADA'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                          {new Date(reg.timestamp).toLocaleString('es-GT')}
+                          {reg.timestamp ? new Date(reg.timestamp).toLocaleString('es-GT') : 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {reg.registrada ? (

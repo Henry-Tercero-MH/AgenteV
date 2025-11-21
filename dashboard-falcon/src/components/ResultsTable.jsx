@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const API_URL = 'http://localhost:5001';
 
@@ -61,8 +61,9 @@ function ResultsTable({ resultados, onSelectImage }) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
+            {/* Solo el .map() dentro de tbody, sin elementos adyacentes */}
             {resultadosConPlacas.map((resultado) => (
-              <>
+              <React.Fragment key={resultado.id}>
                 <tr key={resultado.id} className="hover:bg-gray-50 transition">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {resultado.id}
@@ -124,7 +125,7 @@ function ResultsTable({ resultados, onSelectImage }) {
                         {resultado.detecciones && resultado.detecciones.length > 0 ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {resultado.detecciones.map((det, idx) => (
-                              <div key={idx} className="bg-white border border-gray-200 rounded-lg p-3">
+                              <div key={det.texto ? det.texto + idx : idx} className="bg-white border border-gray-200 rounded-lg p-3">
                                 <div className="text-sm">
                                   <p className="font-semibold text-gray-900">
                                     Placa #{idx + 1}: {det.texto || '(sin texto)'}
@@ -153,8 +154,8 @@ function ResultsTable({ resultados, onSelectImage }) {
                     </td>
                   </tr>
                 )}
-              </>
-            ))}
+              </React.Fragment>
+            ) )}
           </tbody>
         </table>
       </div>
