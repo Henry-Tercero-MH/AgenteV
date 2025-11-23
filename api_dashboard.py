@@ -16,6 +16,12 @@ import subprocess
 from pathlib import Path
 import asyncio
 import shutil
+import sys
+
+# Forzar UTF-8 en Windows
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 
 # Importaciones de módulos de procesamiento (movidas fuera de funciones para mejor rendimiento)
 try:
@@ -23,11 +29,11 @@ try:
     from models.detector import DetectorPlacas, ULTRALYTICS_AVAILABLE
     from models.ocr_engine import MotorOCR
     from config.settings import MODELO_PLACAS_DEFAULT, MODELO_CAMIONES_DEFAULT
-    print("✅ Módulos de procesamiento importados correctamente")
+    print("OK - Modulos de procesamiento importados correctamente")
     if not ULTRALYTICS_AVAILABLE:
-        print("⚠️  Ultralytics no disponible - algunos endpoints pueden no funcionar")
+        print("AVISO - Ultralytics no disponible - algunos endpoints pueden no funcionar")
 except ImportError as e:
-    print(f"❌ Error importando módulos de procesamiento: {e}")
+    print(f"ERROR - Error importando modulos de procesamiento: {e}")
     PipelineDeteccion = None
     DetectorPlacas = None
     MotorOCR = None
@@ -142,6 +148,16 @@ def get_hls_url():
     return {"hls_url": f"/hls/{HLS_PLAYLIST}"}
 
 # Rutas del API
+@app.get("/health")
+def health_check():
+    """Health check endpoint para verificar que el servidor está corriendo"""
+    return {
+        "status": "ok",
+        "service": "Falcon EPSA API",
+        "version": "2.0.0",
+        "timestamp": datetime.now().isoformat()
+    }
+
 @app.get("/")
 def read_root():
     """Endpoint raíz - Sistema de Control de Garita"""

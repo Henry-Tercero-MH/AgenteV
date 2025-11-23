@@ -149,46 +149,109 @@ pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 ## 💻 Uso
 
-### Opción 1: Sistema Completo (API + Dashboard)
+### Inicio Rápido - Sistema Completo
 
-**Windows:**
+**Paso 1: Iniciar el Backend (API)**
+
+Abre una terminal y ejecuta:
+
+```bash
+# Activar entorno virtual primero
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
+
+# Iniciar API
+python api_dashboard.py
+```
+
+Deberías ver:
+```
+OK - Modulos de procesamiento importados correctamente
+>> Iniciando API Dashboard...
+>> Servidor: http://localhost:8001
+>> Documentacion: http://localhost:8001/docs
+INFO:     Uvicorn running on http://0.0.0.0:8001
+```
+
+**Paso 2: Iniciar el Frontend (Dashboard)**
+
+Abre una **nueva terminal** y ejecuta:
+
+```bash
+cd dashboard-falcon
+npm run dev
+```
+
+Deberías ver:
+```
+VITE v7.2.2  ready in XXX ms
+➜  Local:   http://localhost:5173/
+```
+
+**Paso 3: Acceder al Dashboard**
+
+Abre tu navegador en: **http://localhost:5173**
+
+Deberías ver:
+- ✅ Indicador "WS: Conectado" (verde)
+- ✅ Indicador "API: OK" (verde)
+- 🎥 Componente de captura de cámara
+- 📊 Dashboard de control de garita
+
+---
+
+### Validación del Sistema
+
+Una vez iniciado, verifica que todo funciona:
+
+1. **Backend API** - Abre http://localhost:8001/health
+   ```json
+   {
+     "status": "ok",
+     "service": "Falcon EPSA API",
+     "version": "2.0.0"
+   }
+   ```
+
+2. **Frontend Dashboard** - Verifica en http://localhost:5173
+   - Indicador WebSocket verde
+   - Indicador API verde
+   - No hay errores en consola del navegador
+
+3. **WebSocket** - Debería mostrar en los logs del backend:
+   ```
+   >> Cliente conectado. Total conexiones: 1
+   INFO: WebSocket /ws [accepted]
+   ```
+
+---
+
+### Opciones Alternativas de Inicio
+
+#### Opción 1: Scripts Automáticos (Windows)
 ```bash
 start_sistema_completo.bat
 ```
 
-**Linux/Mac:**
+#### Opción 2: Scripts Automáticos (Linux/Mac)
 ```bash
 chmod +x start_falcon.sh
 ./start_falcon.sh
 ```
 
-Esto iniciará:
-- API en `http://localhost:8001`
-- Dashboard en `http://localhost:5173`
-
-### Opción 2: Solo API
-
+#### Opción 3: Solo API
 ```bash
 python api_dashboard.py
 ```
+Documentación: http://localhost:8001/docs
 
-Acceder a la documentación en `http://localhost:8001/docs`
-
-### Opción 3: Solo Dashboard
-
-**Windows:**
+#### Opción 4: Solo Dashboard
 ```bash
-start_dashboard.bat
+cd dashboard-falcon
+npm run dev
 ```
 
-**Linux/Mac:**
-```bash
-chmod +x start_dashboard.sh
-./start_dashboard.sh
-```
-
-### Opción 4: Modo Garita (Cámara en Tiempo Real)
-
+#### Opción 5: Modo Garita (Cámara en Tiempo Real)
 **Windows:**
 ```bash
 start_sistema_garita.bat
@@ -335,6 +398,21 @@ Sistema de votación entre 3 motores:
 
 ## 🛠️ Solución de Problemas
 
+### ✅ Estado Funcional del Proyecto
+
+**Última Validación**: 23 de Noviembre 2025
+
+| Componente | Estado | Notas |
+|------------|--------|-------|
+| Backend API | ✅ Funcional | Puerto 8001, WebSocket operativo |
+| Frontend Dashboard | ✅ Funcional | Puerto 5173, Vite 7.2.2 |
+| WebSocket Tiempo Real | ✅ Funcional | Conexión establecida correctamente |
+| Health Check Endpoint | ✅ Funcional | `/health` respondiendo |
+| Compatibilidad Frontend-Backend | ✅ Validada | Todos los endpoints compatibles |
+| Encoding UTF-8 | ✅ Corregido | Compatible con Windows |
+
+---
+
 ### Error: "Tesseract not found"
 
 ```bash
@@ -363,6 +441,14 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 pip install easyocr
 ```
 
+### Error: "Ultralytics no disponible"
+
+Si ves el mensaje: `AVISO - Ultralytics no disponible`
+
+```bash
+pip install ultralytics
+```
+
 ### Puerto 8001 ya en uso
 
 Cambiar puerto en `api_dashboard.py` línea final:
@@ -370,6 +456,25 @@ Cambiar puerto en `api_dashboard.py` línea final:
 ```python
 uvicorn.run(app, host="0.0.0.0", port=8002)  # Cambiar a 8002
 ```
+
+También actualizar en `dashboard-falcon/src/App.jsx`:
+```javascript
+const API_URL = 'http://localhost:8002';
+const WS_URL = 'ws://localhost:8002/ws';
+```
+
+### WebSocket no conecta
+
+1. Verificar que el backend está corriendo
+2. Verificar que no hay firewall bloqueando el puerto 8001
+3. Revisar la consola del navegador (F12) para ver errores
+4. Verificar que la URL en `App.jsx` es correcta
+
+### Frontend muestra "Backend desconectado"
+
+1. Verificar que `python api_dashboard.py` está corriendo
+2. Probar manualmente: `curl http://localhost:8001/health`
+3. Revisar logs del backend en la terminal
 
 ---
 
