@@ -63,9 +63,17 @@ function CameraCapture({ apiUrl, onDetection }) {
   const processingQueueRef = useRef(new Set()); // Control de duplicados
   const lastProcessedRef = useRef({}); // timestamp de última procesada por placa
   const animationFrameRef = useRef(null);
+  const [vehicleTracking, setVehicleTracking] = useState(new Map()); // Tracking de vehículos entre frames
+  const [directionStats, setDirectionStats] = useState({
+    approaching: 0,
+    leaving: 0,
+    stationary: 0
+  });
   const [detectionStats, setDetectionStats] = useState({
     scans: 0,
     detections: 0,
+    entradas: 0,
+    salidas: 0,
     lastScan: null
   });
 
@@ -107,15 +115,98 @@ function CameraCapture({ apiUrl, onDetection }) {
     cocoSsd.load().then(setCocoModel);
   }, []);
 
-  // Detección de vehículos en el frame
+  // Detección de vehículos en el frame con análisis de dirección
   const detectVehicleInFrame = async (canvas) => {
-    if (!cocoModel || !canvas) return false;
+    if (!cocoModel || !canvas) return { hasVehicle: false, direction: null };
+
     const predictions = await cocoModel.detect(canvas);
     const vehicles = predictions.filter(pred =>
       ['car', 'truck', 'bus', 'motorcycle'].includes(pred.class) && pred.score > 0.5
     );
-    setVehicleBoxes(vehicles.map(v => v.bbox)); // Para overlay
-    return vehicles.length > 0;
+
+    if (vehicles.length === 0) {
+      setVehicleBoxes([]);
+      return { hasVehicle: false, direction: null };
+    }
+
+    // Análisis de dirección basado en tracking
+    const currentTime = Date.now();
+    const newTracking = new Map();
+    let approachingCount = 0;
+    let leavingCount = 0;
+
+    vehicles.forEach(vehicle => {
+      const [x, y, width, height] = vehicle.bbox;
+      const area = width * height;
+      const centerX = x + width / 2;
+      const centerY = y + height / 2;
+
+      // Buscar vehículo similar en el frame anterior
+      let direction = 'stationary';
+      let minDistance = Infinity;
+      let closestVehicleId = null;
+
+      vehicleTracking.forEach((prevData, vehicleId) => {
+        const timeDiff = currentTime - prevData.timestamp;
+        if (timeDiff < 2000) { // Solo considerar vehículos de los últimos 2 segundos
+          const distance = Math.sqrt(
+            Math.pow(centerX - prevData.centerX, 2) +
+            Math.pow(centerY - prevData.centerY, 2)
+          );
+
+          if (distance < 100 && distance < minDistance) { // Umbral de distancia
+            minDistance = distance;
+            closestVehicleId = vehicleId;
+
+            // Análisis de dirección basado en cambio de área
+            const areaChange = area - prevData.area;
+            const areaChangePercent = Math.abs(areaChange) / prevData.area;
+
+            if (areaChangePercent > 0.1) { // Cambio significativo
+              direction = areaChange > 0 ? 'approaching' : 'leaving';
+            }
+          }
+        }
+      });
+
+      // Asignar ID único al vehículo
+      const vehicleId = closestVehicleId || `vehicle_${currentTime}_${Math.random()}`;
+
+      // Actualizar tracking
+      newTracking.set(vehicleId, {
+        centerX,
+        centerY,
+        area,
+        timestamp: currentTime,
+        direction
+      });
+
+      // Contar direcciones
+      if (direction === 'approaching') approachingCount++;
+      else if (direction === 'leaving') leavingCount++;
+    });
+
+    // Actualizar estado de tracking
+    setVehicleTracking(newTracking);
+
+    // Actualizar estadísticas de dirección
+    setDirectionStats(prev => ({
+      approaching: prev.approaching + approachingCount,
+      leaving: prev.leaving + leavingCount,
+      stationary: prev.stationary + (vehicles.length - approachingCount - leavingCount)
+    }));
+
+    // Para overlay visual, mostrar todos los vehículos
+    setVehicleBoxes(vehicles.map(v => v.bbox));
+
+    // Retornar si hay vehículos y la dirección predominante
+    const hasApproaching = approachingCount > 0;
+    return {
+      hasVehicle: vehicles.length > 0,
+      direction: hasApproaching ? 'approaching' : null,
+      vehicleCount: vehicles.length,
+      approachingCount
+    };
   };
 
   // Iniciar fuente de video (webcam o RTSP)
@@ -173,7 +264,7 @@ function CameraCapture({ apiUrl, onDetection }) {
   };
 
   // Procesar frame en segundo plano sin bloquear el escaneo
-  const processFrameBackground = async (canvas) => {
+  const processFrameBackground = async (canvas, tipoEvento = "ENTRADA") => {
     try {
       // Convertir a blob
       const blob = await new Promise(resolve => {
@@ -194,6 +285,7 @@ function CameraCapture({ apiUrl, onDetection }) {
       // Crear FormData para enviar la imagen
       const formData = new FormData();
       formData.append('file', blob, `scan_${frameId}.jpg`);
+      formData.append('tipo_evento', tipoEvento);  // Agregar tipo de evento
 
       console.log('🔍 Escaneando frame...');
 
@@ -218,7 +310,9 @@ function CameraCapture({ apiUrl, onDetection }) {
         // Actualizar estadísticas
         setDetectionStats(prev => ({
           ...prev,
-          detections: prev.detections + response.data.detecciones.length
+          detections: prev.detections + response.data.detecciones.length,
+          entradas: tipoEvento === "ENTRADA" ? prev.entradas + response.data.detecciones.length : prev.entradas,
+          salidas: tipoEvento === "SALIDA" ? prev.salidas + response.data.detecciones.length : prev.salidas
         }));
 
         // Guardar imagen con detección
@@ -338,10 +432,10 @@ function CameraCapture({ apiUrl, onDetection }) {
     }
   };
 
-  // Auto-escaneo continuo con detección de vehículos en DOS PASOS
+  // Auto-escaneo continuo bidireccional con detección de vehículos en TRES PASOS
   useEffect(() => {
     if (autoScanEnabled && cameraActive) {
-      console.log(`🚀 Iniciando auto-escaneo de 2 pasos desde ${videoSource}...`);
+      console.log(`🚀 Iniciando auto-escaneo bidireccional desde ${videoSource}...`);
       scanIntervalRef.current = setInterval(async () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -365,9 +459,9 @@ function CameraCapture({ apiUrl, onDetection }) {
           }
         }
 
-        // PASO 2: Pre-escaneo - Detectar si hay vehículo/camión
+        // PASO 2: Pre-escaneo - Detectar si hay vehículo/camión y su dirección
         console.log('🔍 PASO 1: Buscando vehículos en el frame...');
-        const hasVehicle = await detectVehicleInFrame(canvas);
+        const detectionResult = await detectVehicleInFrame(canvas);
 
         // Actualizar estadísticas de escaneos
         setDetectionStats(prev => ({
@@ -376,10 +470,20 @@ function CameraCapture({ apiUrl, onDetection }) {
           lastScan: new Date().toLocaleTimeString()
         }));
 
-        if (hasVehicle) {
-          console.log('🚗 PASO 2: ¡Vehículo detectado! Enviando al OCR para extracción de placa...');
-          // Solo procesar OCR si hay vehículo detectado
-          processFrameBackground(canvas);
+        if (detectionResult.hasVehicle) {
+          if (detectionResult.direction === 'approaching') {
+            console.log(`🚗 PASO 2: ¡Vehículo ACERCÁNDOSE detectado! (${detectionResult.approachingCount} acercándose) Enviando al OCR como ENTRADA...`);
+            // Procesar OCR para vehículos que entran
+            processFrameBackground(canvas, "ENTRADA");
+          } else if (detectionResult.direction === 'leaving') {
+            console.log(`🚙 PASO 2: ¡Vehículo ALEJÁNDOSE detectado! Enviando al OCR como SALIDA...`);
+            // Procesar OCR para vehículos que salen
+            processFrameBackground(canvas, "SALIDA");
+          } else {
+            console.log(`🚗 Vehículo detectado pero dirección indeterminada (${detectionResult.vehicleCount} total) - procesando como ENTRADA por defecto...`);
+            // Procesar como entrada por defecto si no se puede determinar dirección
+            processFrameBackground(canvas, "ENTRADA");
+          }
         } else {
           console.log('➖ No hay vehículos en el frame - saltando procesamiento OCR');
         }
@@ -387,7 +491,7 @@ function CameraCapture({ apiUrl, onDetection }) {
       return () => {
         if (scanIntervalRef.current) {
           clearInterval(scanIntervalRef.current);
-          console.log('⏹️ Auto-escaneo de 2 pasos detenido');
+          console.log('⏹️ Auto-escaneo bidireccional detenido');
         }
       };
     }
@@ -542,14 +646,14 @@ function CameraCapture({ apiUrl, onDetection }) {
           <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-600 to-blue-600 text-white px-4 py-2 text-center">
             <div className="flex items-center justify-center gap-4">
               <span className="animate-pulse">
-                🔍 Escaneo Inteligente 2 Pasos: {videoSource === 'webcam' ? 'Webcam' : 'RTSP'}
+                🔍 Escaneo Bidireccional: {videoSource === 'webcam' ? 'Webcam' : 'RTSP'}
               </span>
               <div className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded">
-                {detectionStats.scans} frames | {detectionStats.detections} placas
+                {detectionStats.scans} frames | {detectionStats.entradas}E {detectionStats.salidas}S
               </div>
             </div>
             <div className="text-xs mt-1 opacity-90">
-              PASO 1: Buscar vehículo → PASO 2: Extraer placa OCR
+              PASO 1: Buscar vehículo → PASO 2: Analizar dirección → PASO 3: Registrar E/S + OCR
             </div>
           </div>
         )}
@@ -653,15 +757,17 @@ function CameraCapture({ apiUrl, onDetection }) {
                   onChange={(e) => {
                     setAutoScanEnabled(e.target.checked);
                     if (e.target.checked) {
-                      setDetectionStats({ scans: 0, detections: 0, lastScan: null });
+                      setDetectionStats({ scans: 0, detections: 0, entradas: 0, salidas: 0, lastScan: null });
+                      setDirectionStats({ approaching: 0, leaving: 0, stationary: 0 });
+                      setVehicleTracking(new Map());
                     }
                   }}
                   className="w-5 h-5 text-green-600"
                 />
                 <div>
-                  <span className="font-bold text-gray-800">🔍 Escaneo Inteligente 2 Pasos</span>
+                  <span className="font-bold text-gray-800">🔍 Escaneo Inteligente Bidireccional</span>
                   <p className="text-xs text-gray-600">
-                    PASO 1: Detecta vehículo/camión → PASO 2: Extrae placa con OCR
+                    PASO 1: Detecta vehículo → PASO 2: Analiza dirección → PASO 3: Registra E/S + OCR
                   </p>
                 </div>
               </label>
@@ -684,7 +790,7 @@ function CameraCapture({ apiUrl, onDetection }) {
 
             {autoScanEnabled && (
               <div className="mt-3 p-3 bg-white rounded border border-green-200">
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-5 gap-4 text-center mb-3">
                   <div>
                     <p className="text-2xl font-bold text-blue-600">{detectionStats.scans}</p>
                     <p className="text-xs text-gray-600">Frames Analizados</p>
@@ -692,8 +798,18 @@ function CameraCapture({ apiUrl, onDetection }) {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-green-600">{detectionStats.detections}</p>
-                    <p className="text-xs text-gray-600">Placas Detectadas</p>
-                    <p className="text-xs text-green-500">PASO 2</p>
+                    <p className="text-xs text-gray-600">Total Placas</p>
+                    <p className="text-xs text-green-500">PASO 3</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-green-600">{detectionStats.entradas}</p>
+                    <p className="text-xs text-gray-600">Entradas</p>
+                    <p className="text-xs text-green-500">➡️ ENTRADA</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-red-600">{detectionStats.salidas}</p>
+                    <p className="text-xs text-gray-600">Salidas</p>
+                    <p className="text-xs text-red-500">⬅️ SALIDA</p>
                   </div>
                   <div>
                     <p className="text-sm font-mono text-gray-700">{detectionStats.lastScan || '--:--:--'}</p>
@@ -701,15 +817,29 @@ function CameraCapture({ apiUrl, onDetection }) {
                     <p className="text-xs text-gray-500">Continuo</p>
                   </div>
                 </div>
+                <div className="grid grid-cols-3 gap-4 text-center text-sm">
+                  <div className="bg-orange-50 p-2 rounded">
+                    <p className="font-bold text-orange-600">{directionStats.approaching}</p>
+                    <p className="text-xs text-orange-600">Acercándose</p>
+                  </div>
+                  <div className="bg-red-50 p-2 rounded">
+                    <p className="font-bold text-red-600">{directionStats.leaving}</p>
+                    <p className="text-xs text-red-600">Alejándose</p>
+                  </div>
+                  <div className="bg-gray-50 p-2 rounded">
+                    <p className="font-bold text-gray-600">{directionStats.stationary}</p>
+                    <p className="text-xs text-gray-600">Estacionarios</p>
+                  </div>
+                </div>
                 <p className="text-xs text-green-700 mt-2 text-center font-semibold">
-                  ✅ Sistema de 2 pasos activo: Solo procesa OCR cuando detecta vehículo
+                  🎯 Sistema Bidireccional: Detecta dirección y registra E/S automáticamente
                 </p>
               </div>
             )}
 
             {!autoScanEnabled && (
               <p className="text-xs text-gray-600 text-center">
-                💡 Activa el escaneo automático para detectar placas desde {videoSource === 'webcam' ? 'la webcam' : 'el stream RTSP'} en tiempo real sin presionar botones
+                💡 Activa el escaneo automático para detectar placas de vehículos que entran y salen, registrando E/S automáticamente
               </p>
             )}
           </div>

@@ -2,7 +2,16 @@
 """
 Detector de placas y camiones usando YOLO
 """
-from ultralytics import YOLO
+# Import lazy para evitar problemas de inicialización
+ULTRALYTICS_AVAILABLE = False
+YOLO = None
+
+try:
+    # Intentar importar solo si es necesario
+    pass  # No importar aquí, hacerlo en el constructor
+except ImportError as e:
+    print(f"⚠️  Ultralytics no disponible: {e}")
+
 from utils.image_utils import convertir_a_numpy, recortar_region
 from config.settings import UMBRAL_CONFIANZA_DEFAULT, PADDING_RECORTE
 
@@ -18,12 +27,38 @@ class DetectorPlacas:
             ruta_modelo_placas (str): Ruta al modelo YOLO de placas
             ruta_modelo_camiones (str, optional): Ruta al modelo YOLO de camiones
         """
-        self.modelo_placas = YOLO(ruta_modelo_placas)
-        self.modelo_camiones = YOLO(ruta_modelo_camiones) if ruta_modelo_camiones else None
+        global YOLO, ULTRALYTICS_AVAILABLE
         
-        print(f"[INFO] Modelo de placas cargado: {ruta_modelo_placas}")
-        if self.modelo_camiones:
-            print(f"[INFO] Modelo de camiones cargado: {ruta_modelo_camiones}")
+        # Importar ultralytics solo cuando se necesita
+        if YOLO is None:
+            try:
+                from ultralytics import YOLO as YOLOClass
+                YOLO = YOLOClass
+                ULTRALYTICS_AVAILABLE = True
+                print("✅ Ultralytics importado correctamente")
+            except ImportError as e:
+                raise ImportError(f"Ultralytics no está disponible. Instala ultralytics: pip install ultralytics. Error: {e}")
+        
+        if not ULTRALYTICS_AVAILABLE:
+            raise ImportError("Ultralytics no está disponible. Instala ultralytics: pip install ultralytics")
+        
+        try:
+            print(f"[INFO] Cargando modelo de placas: {ruta_modelo_placas}")
+            self.modelo_placas = YOLO(ruta_modelo_placas)
+            print("[INFO] Modelo de placas cargado exitosamente")
+        except Exception as e:
+            print(f"[ERROR] Error cargando modelo de placas: {e}")
+            raise RuntimeError(f"No se pudo cargar el modelo de placas: {e}")
+        
+        self.modelo_camiones = None
+        if ruta_modelo_camiones:
+            try:
+                print(f"[INFO] Cargando modelo de camiones: {ruta_modelo_camiones}")
+                self.modelo_camiones = YOLO(ruta_modelo_camiones)
+                print("[INFO] Modelo de camiones cargado exitosamente")
+            except Exception as e:
+                print(f"[WARNING] Error cargando modelo de camiones: {e}. Continuando sin detección de camiones.")
+                self.modelo_camiones = None
     
     def detectar_camiones(self, imagen, umbral_confianza=UMBRAL_CONFIANZA_DEFAULT):
         """

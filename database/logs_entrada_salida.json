@@ -1241,6 +1241,15 @@
       "imagen_path": "Outputs/capturas_dashboard/captura_20251121_070912_891283.jpg",
       "confianza": 0.7458696961402893,
       "registrada": false
+    },
+    {
+      "id": 139,
+      "placa": "PO28GHO",
+      "timestamp": "2025-11-22T15:46:24.587677",
+      "tipo_evento": "ENTRADA",
+      "imagen_path": "Outputs/capturas_dashboard/captura_20251122_154621_609690.jpg",
+      "confianza": 0.6478487253189087,
+      "registrada": false
     }
   ]
 }

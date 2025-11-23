@@ -17,15 +17,33 @@ from pathlib import Path
 import asyncio
 import shutil
 
-# Modelos Pydantic para validación
-class DeteccionPlaca(BaseModel):
-    placa: str
-    imagen_path: Optional[str] = None
-    confianza: Optional[float] = None
+# Importaciones de módulos de procesamiento (movidas fuera de funciones para mejor rendimiento)
+try:
+    from core.pipeline import PipelineDeteccion
+    from models.detector import DetectorPlacas, ULTRALYTICS_AVAILABLE
+    from models.ocr_engine import MotorOCR
+    from config.settings import MODELO_PLACAS_DEFAULT, MODELO_CAMIONES_DEFAULT
+    print("✅ Módulos de procesamiento importados correctamente")
+    if not ULTRALYTICS_AVAILABLE:
+        print("⚠️  Ultralytics no disponible - algunos endpoints pueden no funcionar")
+except ImportError as e:
+    print(f"❌ Error importando módulos de procesamiento: {e}")
+    PipelineDeteccion = None
+    DetectorPlacas = None
+    MotorOCR = None
+    MODELO_PLACAS_DEFAULT = None
+    MODELO_CAMIONES_DEFAULT = None
+    ULTRALYTICS_AVAILABLE = False
 
 class RegistroEntrada(BaseModel):
     placa: str
     timestamp: str
+    imagen_path: Optional[str] = None
+    tipo_evento: str = "ENTRADA"  # ENTRADA o SALIDA
+
+class DeteccionPlaca(BaseModel):
+    placa: str
+    confianza: float
     imagen_path: Optional[str] = None
     tipo_evento: str = "ENTRADA"  # ENTRADA o SALIDA
 
@@ -337,7 +355,7 @@ async def registrar_entrada(deteccion: DeteccionPlaca):
     Valida la placa en la DB y registra el evento con timestamp.
 
     Args:
-        deteccion: Datos de la detección (placa, imagen, confianza)
+        deteccion: Datos de la detección (placa, imagen, confianza, tipo_evento)
 
     Returns:
         dict: Información completa del vehículo + registro guardado
@@ -369,7 +387,7 @@ async def registrar_entrada(deteccion: DeteccionPlaca):
         "id": None,  # Se asignará después
         "placa": deteccion.placa,
         "timestamp": timestamp,
-        "tipo_evento": "ENTRADA",
+        "tipo_evento": deteccion.tipo_evento,  # Usar el tipo_evento del request
         "imagen_path": deteccion.imagen_path,
         "confianza": deteccion.confianza,
         "registrada": registrada
@@ -394,11 +412,12 @@ async def registrar_entrada(deteccion: DeteccionPlaca):
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
     # Preparar respuesta completa
+    tipo_texto = "entrada" if deteccion.tipo_evento == "ENTRADA" else "salida"
     respuesta = {
         "registro": registro,
         "placa_info": placa_info if registrada else None,
         "registrada": registrada,
-        "mensaje": "Vehículo registrado" if registrada else "Placa no registrada en el sistema"
+        "mensaje": f"Vehículo registrado ({tipo_texto})" if registrada else f"Placa no registrada en el sistema ({tipo_texto})"
     }
 
     # Broadcast a todos los clientes WebSocket
@@ -475,18 +494,33 @@ def obtener_historial_placa(placa: str):
         raise HTTPException(status_code=500, detail=f"Error al leer historial: {str(e)}")
 
 @app.post("/api/procesar-captura")
-async def procesar_captura(file: UploadFile = File(...)):
+async def procesar_captura(file: UploadFile = File(...), tipo_evento: str = "ENTRADA"):
     """
     Procesa una imagen capturada desde el dashboard React.
     Detecta placas, valida contra DB y registra automáticamente.
 
     Args:
         file: Imagen capturada (JPG/PNG)
+        tipo_evento: Tipo de evento ("ENTRADA" o "SALIDA")
 
     Returns:
         dict: Resultado completo del procesamiento
     """
     try:
+        # Verificar que los módulos estén disponibles
+        if not all([PipelineDeteccion, DetectorPlacas, MotorOCR]):
+            raise HTTPException(
+                status_code=500,
+                detail="Módulos de procesamiento no disponibles. Verifica que core/, models/ y config/ estén correctamente configurados."
+            )
+
+        # Verificar que ultralytics esté disponible antes de intentar crear detector
+        if not ULTRALYTICS_AVAILABLE:
+            raise HTTPException(
+                status_code=500,
+                detail="Ultralytics/YOLO no está disponible. Hay un problema con la instalación de ultralytics o PyTorch."
+            )
+
         # Guardar archivo temporal
         temp_dir = Path("Outputs/temp_capturas")
         temp_dir.mkdir(parents=True, exist_ok=True)
@@ -499,27 +533,32 @@ async def procesar_captura(file: UploadFile = File(...)):
 
         print(f"[CAPTURA] Captura recibida: {temp_path}")
 
-        # Procesar imagen con el pipeline
-        from core.pipeline import PipelineDeteccion
-        from models.detector import DetectorPlacas
-        from models.ocr_engine import MotorOCR
-        from config.settings import MODELO_PLACAS_DEFAULT, MODELO_CAMIONES_DEFAULT
-
         # Inicializar pipeline (esto debería ser singleton en producción)
+        print("[DEBUG] Inicializando detector...")
         detector = DetectorPlacas(
             ruta_modelo_placas=MODELO_PLACAS_DEFAULT,
             ruta_modelo_camiones=MODELO_CAMIONES_DEFAULT
         )
-        motor_ocr = MotorOCR()
+        print("[DEBUG] Inicializando motor OCR...")
+        # Usar motor OCR híbrido para mejor precisión
+        motor_ocr = MotorOCR(usar_hibrido=True)
+        print("[DEBUG] Inicializando pipeline...")
         pipeline = PipelineDeteccion(detector, motor_ocr)
+        print("[DEBUG] Pipeline inicializado correctamente")
 
         # Procesar imagen
+        print("[DEBUG] Iniciando procesamiento de imagen...")
         resultados = pipeline.procesar_imagen(
             str(temp_path),
             umbral_confianza=0.5,
             guardar=True,
             carpeta_salida="Outputs/capturas_dashboard"
         )
+
+        print(f"[DEBUG] Resultados del pipeline: {resultados}")
+        if resultados:
+            print(f"[DEBUG] Cantidad de placas detectadas: {resultados.get('cantidad_placas', 0)}")
+            print(f"[DEBUG] Detecciones: {resultados.get('detecciones', [])}")
 
         if not resultados or resultados['cantidad_placas'] == 0:
             # Limpiar archivo temporal
@@ -544,7 +583,8 @@ async def procesar_captura(file: UploadFile = File(...)):
             deteccion = DeteccionPlaca(
                 placa=placa_texto,
                 confianza=placa_data.get('confianza_deteccion', 0.0),
-                imagen_path=f"Outputs/capturas_dashboard/captura_{timestamp}.jpg"
+                imagen_path=f"Outputs/capturas_dashboard/captura_{timestamp}.jpg",
+                tipo_evento=tipo_evento  # Pasar el tipo de evento
             )
 
             # Registrar en el sistema (reutilizar lógica existente)
@@ -620,10 +660,69 @@ async def procesar_batch_endpoint():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al iniciar procesamiento: {str(e)}")
 
-@app.get("/health")
-def health_check():
-    """Health check endpoint"""
-    return {"status": "ok", "service": "Falcon EPSA Dashboard API"}
+@app.post("/api/procesar-ocr-solo")
+async def procesar_ocr_solo(file: UploadFile = File(...), tipo_evento: str = "ENTRADA"):
+    """
+    Procesa OCR solo en una imagen (sin YOLO) para testing.
+    Útil para verificar que el OCR funciona correctamente.
+
+    Args:
+        file: Imagen capturada (JPG/PNG)
+        tipo_evento: Tipo de evento ("ENTRADA" o "SALIDA")
+
+    Returns:
+        dict: Resultado del OCR
+    """
+    try:
+        # Verificar que el módulo OCR esté disponible
+        if not MotorOCR:
+            raise HTTPException(
+                status_code=500,
+                detail="Motor OCR no disponible."
+            )
+
+        # Guardar archivo temporal
+        temp_dir = Path("Outputs/temp_capturas")
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        temp_path = temp_dir / f"ocr_test_{timestamp}.jpg"
+
+        with temp_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        print(f"[OCR-TEST] Imagen recibida: {temp_path}")
+
+        # Inicializar motor OCR
+        print("[DEBUG] Inicializando motor OCR...")
+        motor_ocr = MotorOCR()
+        print("[DEBUG] Motor OCR inicializado")
+
+        # Leer imagen y aplicar OCR
+        import cv2
+        imagen = cv2.imread(str(temp_path))
+        if imagen is None:
+            raise HTTPException(status_code=400, detail="No se pudo leer la imagen")
+
+        print("[DEBUG] Aplicando OCR...")
+        texto_extraido = motor_ocr.extraer_texto(imagen)
+        print(f"[DEBUG] Texto extraído: '{texto_extraido}'")
+
+        # Limpiar archivo temporal
+        temp_path.unlink(missing_ok=True)
+
+        return {
+            "success": True,
+            "mensaje": "OCR procesado correctamente",
+            "texto_extraido": texto_extraido,
+            "longitud": len(texto_extraido) if texto_extraido else 0
+        }
+
+    except Exception as e:
+        print(f"[ERROR] Error en OCR solo: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error en OCR: {str(e)}")
 
 
 if __name__ == "__main__":
@@ -631,6 +730,6 @@ if __name__ == "__main__":
     print(">> Servidor: http://localhost:8001")
     print(">> Documentacion: http://localhost:8001/docs")
     print(">> Redoc: http://localhost:8001/redoc")
-    start_ffmpeg()
+    # start_ffmpeg()  # Deshabilitado para evitar problemas con RTSP
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")

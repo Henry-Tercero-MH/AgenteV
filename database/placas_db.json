@@ -1,7 +1,7 @@
 {
   "metadata": {
     "fecha_generacion": "2025-11-16T14:42:18.021923",
-    "total_placas": 74,
+    "total_placas": 77,
     "version": "1.0"
   },
   "placas": [
@@ -966,6 +966,39 @@
       "observaciones": "Estado: RESTRINGIDO",
       "ultima_deteccion": "2025-11-16T12:11:11.207348",
       "imagen_origen": "test4.webp"
+    },
+    {
+      "id": 75,
+      "placa": "P353CCB",
+      "estado": "NORMAL",
+      "tipo_vehiculo": "PARTICULAR",
+      "propietario": "Propietario Test",
+      "departamento": "Guatemala",
+      "fecha_registro": "2025-11-22",
+      "vigencia": "2025-12-31",
+      "observaciones": "Placa agregada para testing de corrección"
+    },
+    {
+      "id": 76,
+      "placa": "P353CCB",
+      "estado": "NORMAL",
+      "tipo_vehiculo": "PARTICULAR",
+      "propietario": "Propietario Test",
+      "departamento": "Guatemala",
+      "fecha_registro": "2025-11-22",
+      "vigencia": "2025-12-31",
+      "observaciones": "Placa agregada para testing de corrección"
+    },
+    {
+      "id": 77,
+      "placa": "P486KJD",
+      "estado": "NORMAL",
+      "tipo_vehiculo": "PARTICULAR",
+      "propietario": "Propietario Test Car2",
+      "departamento": "Guatemala",
+      "fecha_registro": "2025-11-22",
+      "vigencia": "2025-12-31",
+      "observaciones": "Placa agregada para testing de corrección de placas pequeñas"
     }
   ]
 }
